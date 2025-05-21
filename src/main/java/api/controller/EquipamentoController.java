@@ -1,7 +1,7 @@
 package api.controller;
 
 
-import api.entity.Equipamento;
+import api.dto.EquipamentoDTO;
 import api.service.EquipamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/equipamentos")
+@RequestMapping("/api/v1/equipamentos")
 public class EquipamentoController {
 
 
@@ -19,32 +19,50 @@ public class EquipamentoController {
     private EquipamentoService equipamentoService;
 
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Equipamento> listar() {
+    @GetMapping(produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_YAML_VALUE})
+    public List<EquipamentoDTO> listar() {
         return equipamentoService.listar();
     }
 
     @GetMapping(value = "/{id}",
-            produces = MediaType.APPLICATION_JSON_VALUE
+            produces = {
+                    MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.APPLICATION_XML_VALUE,
+                    MediaType.APPLICATION_YAML_VALUE}
     )
-    public Equipamento buscarPorId(@PathVariable("id") Long id) {
+    public EquipamentoDTO buscarPorId(@PathVariable("id") Long id) {
         return equipamentoService.buscarPorId(id);
     }
 
     @PostMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
+            consumes = {
+                    MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.APPLICATION_XML_VALUE,
+                    MediaType.APPLICATION_YAML_VALUE},
+            produces = {
+                    MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.APPLICATION_XML_VALUE,
+                    MediaType.APPLICATION_YAML_VALUE}
     )
-    public Equipamento cadastrar(@RequestBody Equipamento equipamento) {
-        return equipamentoService.cadastrar(equipamento);
+    public EquipamentoDTO cadastrar(@RequestBody EquipamentoDTO equipamentoDTO) {
+        return equipamentoService.cadastrar(equipamentoDTO);
     }
 
     @PutMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
+            consumes = {
+                    MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.APPLICATION_XML_VALUE,
+                    MediaType.APPLICATION_YAML_VALUE},
+            produces = {
+                    MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.APPLICATION_XML_VALUE,
+                    MediaType.APPLICATION_YAML_VALUE}
     )
-    public Equipamento atualizar(@RequestBody Equipamento equipamento) {
-        return equipamentoService.atualizar(equipamento);
+    public EquipamentoDTO atualizar(@RequestBody EquipamentoDTO equipamentoDTO) {
+        return equipamentoService.atualizar(equipamentoDTO);
     }
 
 

@@ -1,24 +1,17 @@
-package api.entity;
+package api.dto;
 
-
-import jakarta.persistence.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 
-@Table(name = "tb_equipamentos")
-@Entity
-public class Equipamento implements Serializable {
+public class EquipamentoDTO extends RepresentationModel<EquipamentoDTO> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id", nullable = false)
     private Long id;
 
-    @Column(name="nome", nullable = false)
     private String nome;
 
     public Long getId() {
@@ -37,30 +30,31 @@ public class Equipamento implements Serializable {
         this.nome = nome;
     }
 
-    public Equipamento(Long id, String nome) {
-        this.id = id;
-        this.nome = nome;
+    public EquipamentoDTO() {
     }
 
-    public Equipamento() {}
+
+    public EquipamentoDTO(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "EquipamentoDTO{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                '}';
+    }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Equipamento that = (Equipamento) o;
+        EquipamentoDTO that = (EquipamentoDTO) o;
         return Objects.equals(id, that.id) && Objects.equals(nome, that.nome);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, nome);
-    }
-
-    @Override
-    public String toString() {
-        return "Equipamento{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                '}';
     }
 }

@@ -1,5 +1,6 @@
 package api.service;
 
+import api.dto.EquipamentoDTO;
 import api.entity.Equipamento;
 import org.springframework.stereotype.Service;
 
@@ -8,13 +9,13 @@ import java.util.List;
 
 public interface EquipamentoService {
 
-    List<Equipamento> listar();
+    List<EquipamentoDTO> listar();
 
-    Equipamento buscarPorId(Long id);
+    EquipamentoDTO buscarPorId(Long id);
 
-    Equipamento cadastrar(Equipamento equipamento);
+    EquipamentoDTO cadastrar(EquipamentoDTO equipamentoDTO);
 
-    Equipamento atualizar(Equipamento equipamento);
+    EquipamentoDTO atualizar(EquipamentoDTO equipamentoDTO);
 
     void excluir(Long id);
 
