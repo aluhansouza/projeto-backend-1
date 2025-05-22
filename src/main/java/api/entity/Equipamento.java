@@ -46,9 +46,11 @@ public class Equipamento implements Serializable {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Equipamento that = (Equipamento) o;
-        return Objects.equals(id, that.id) && Objects.equals(nome, that.nome);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(nome, that.nome);
     }
 
     @Override

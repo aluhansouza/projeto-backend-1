@@ -33,9 +33,9 @@ public class EquipamentoDTO extends RepresentationModel<EquipamentoDTO> implemen
     public EquipamentoDTO() {
     }
 
-
-    public EquipamentoDTO(Long id) {
+    public EquipamentoDTO(Long id, String nome) {
         this.id = id;
+        this.nome = nome;
     }
 
     @Override
