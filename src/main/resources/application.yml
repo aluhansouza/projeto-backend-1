@@ -15,5 +15,11 @@ spring:
     open-in-view: false
 logging:
   level:
-    # root: WARN
-    api: DEBUG
+    root: INFO
+    #api: INFO
+
+
+spring-doc:
+  paths-to-match: /api/v1/**
+  swagger-ui:
+    use-root-path: true

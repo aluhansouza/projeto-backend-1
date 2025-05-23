@@ -1,8 +1,9 @@
 package api.controller;
 
-
+import api.controller.docs.EquipamentoControllerDocs;
 import api.dto.EquipamentoDTO;
 import api.service.EquipamentoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/equipamentos")
-public class EquipamentoController {
+@Tag(name = "Equipamentos", description = "Endpoints para Equipamentos")
+public class EquipamentoController implements EquipamentoControllerDocs {
 
 
     @Autowired
@@ -23,6 +25,7 @@ public class EquipamentoController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_YAML_VALUE})
+    @Override
     public List<EquipamentoDTO> listar() {
         return equipamentoService.listar();
     }
@@ -33,6 +36,7 @@ public class EquipamentoController {
                     MediaType.APPLICATION_XML_VALUE,
                     MediaType.APPLICATION_YAML_VALUE}
     )
+    @Override
     public EquipamentoDTO buscarPorId(@PathVariable("id") Long id) {
         return equipamentoService.buscarPorId(id);
     }
@@ -47,6 +51,7 @@ public class EquipamentoController {
                     MediaType.APPLICATION_XML_VALUE,
                     MediaType.APPLICATION_YAML_VALUE}
     )
+    @Override
     public EquipamentoDTO cadastrar(@RequestBody EquipamentoDTO equipamentoDTO) {
         return equipamentoService.cadastrar(equipamentoDTO);
     }
@@ -61,12 +66,14 @@ public class EquipamentoController {
                     MediaType.APPLICATION_XML_VALUE,
                     MediaType.APPLICATION_YAML_VALUE}
     )
+    @Override
     public EquipamentoDTO atualizar(@RequestBody EquipamentoDTO equipamentoDTO) {
         return equipamentoService.atualizar(equipamentoDTO);
     }
 
 
     @DeleteMapping(value = "/{id}")
+    @Override
     public ResponseEntity<?> excluir(@PathVariable("id") Long id) {
         equipamentoService.excluir(id);
         return ResponseEntity.noContent().build();
