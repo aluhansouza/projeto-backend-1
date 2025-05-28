@@ -19,7 +19,7 @@ public class OpenApiConfig {
                         .termsOfService("Projeto Backend")
                         .license(new License()
                                 .name("Apache 2.0")
-                                .url("https://pub.erudio.com.br/meus-cursos")
+                                .url("https://httpd.apache.org/")
                         )
                 );
     }

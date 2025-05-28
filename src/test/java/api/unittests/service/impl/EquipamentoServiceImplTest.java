@@ -1,10 +1,11 @@
-package api.service.impl;
+package api.unittests.service.impl;
 
 import api.dto.EquipamentoDTO;
 import api.entity.Equipamento;
 import api.exception.RequiredObjectIsNullException;
 import api.repository.EquipamentoRepository;
-import api.unitetests.mapper.mocks.MockEquipamento;
+import api.service.impl.EquipamentoServiceImpl;
+import api.unittests.mapper.mocks.MockEquipamento;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

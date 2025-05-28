@@ -1,4 +1,4 @@
-package api.unitetests.mapper.mocks;
+package api.unittests.mapper.mocks;
 
 import api.dto.EquipamentoDTO;
 import api.entity.Equipamento;
