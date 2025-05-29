@@ -1,4 +1,4 @@
-package api.integrationtests.controller.withjson;
+package api.integrationtests.controllers.cors.withjson;
 
 import api.config.TestConfigs;
 import api.integrationtests.dto.EquipamentoDTO;
@@ -17,11 +17,12 @@ import org.springframework.http.MediaType;
 
 import static io.restassured.RestAssured.given;
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "server.port=8888" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {"server.port=8888"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class EquipamentoControllerTest extends AbstractIntegrationTest {
+class EquipamentoControllerCorsTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
     private static ObjectMapper objectMapper;
@@ -60,15 +61,15 @@ public class EquipamentoControllerTest extends AbstractIntegrationTest {
                 .body()
                 .asString();
 
-        EquipamentoDTO criadoEquipamentoDTO = objectMapper.readValue(content, EquipamentoDTO.class);
-        equipamentoDTO = criadoEquipamentoDTO;
+        EquipamentoDTO criadoEquipamento = objectMapper.readValue(content, EquipamentoDTO.class);
+        equipamentoDTO = criadoEquipamento;
 
-        assertNotNull(criadoEquipamentoDTO.getId());
-        assertNotNull(criadoEquipamentoDTO.getNome());
+        assertNotNull(criadoEquipamento.getId());
+        assertNotNull(criadoEquipamento.getNome());
 
-        assertTrue(criadoEquipamentoDTO.getId() > 0);
+        assertTrue(criadoEquipamento.getId() > 0);
 
-        assertEquals("Teste 2", criadoEquipamentoDTO.getNome());
+        assertEquals("Teste 2", criadoEquipamento.getNome());
 
     }
 
@@ -121,16 +122,18 @@ public class EquipamentoControllerTest extends AbstractIntegrationTest {
                 .body()
                 .asString();
 
-        EquipamentoDTO criadoEquipamentoDTO = objectMapper.readValue(content, EquipamentoDTO.class);
-        equipamentoDTO = criadoEquipamentoDTO;
+        EquipamentoDTO criadoEquipamento = objectMapper.readValue(content, EquipamentoDTO.class);
+        equipamentoDTO = criadoEquipamento;
 
-        assertNotNull(criadoEquipamentoDTO.getId());
-        assertNotNull(criadoEquipamentoDTO.getNome());
+        assertNotNull(criadoEquipamento.getId());
+        assertNotNull(criadoEquipamento.getNome());
 
-        assertTrue(criadoEquipamentoDTO.getId() > 0);
 
-        assertEquals("Teste 2", criadoEquipamentoDTO.getNome());
+        assertTrue(criadoEquipamento.getId() > 0);
+
+        assertEquals("Teste 2", criadoEquipamento.getNome());
     }
+
     @Test
     @Order(4)
     void findByIdWithWrongOrigin() throws JsonProcessingException {
@@ -159,6 +162,5 @@ public class EquipamentoControllerTest extends AbstractIntegrationTest {
     private void mockEquipamento() {
         equipamentoDTO.setNome("Teste 2");
     }
-
 
 }

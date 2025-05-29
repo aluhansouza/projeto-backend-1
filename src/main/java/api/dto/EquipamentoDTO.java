@@ -1,11 +1,12 @@
 package api.dto;
 
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-
+@Relation(collectionRelation = "equipamentos")
 public class EquipamentoDTO extends RepresentationModel<EquipamentoDTO> implements Serializable {
 
     private static final long serialVersionUID = 1L;

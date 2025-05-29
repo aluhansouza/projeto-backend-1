@@ -1,15 +1,17 @@
 package api.service;
 
 import api.dto.EquipamentoDTO;
-import api.entity.Equipamento;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 
 
 public interface EquipamentoService {
 
-    List<EquipamentoDTO> listar();
+
+    PagedModel<EntityModel<EquipamentoDTO>> listar(Pageable pageable);
+
+    PagedModel<EntityModel<EquipamentoDTO>> buscarPorNome(String nome, Pageable pageable);
 
     EquipamentoDTO buscarPorId(Long id);
 
@@ -18,9 +20,6 @@ public interface EquipamentoService {
     EquipamentoDTO atualizar(EquipamentoDTO equipamentoDTO);
 
     void excluir(Long id);
-
-
-
 
 
 }
