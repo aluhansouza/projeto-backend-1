@@ -1,4 +1,4 @@
-package api.exception;
+package api.exceptions;
 
 import java.util.Date;
 
