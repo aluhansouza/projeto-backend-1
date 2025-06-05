@@ -1,6 +1,6 @@
 package api.unittests.service.impl;
 
-import api.dto.EquipamentoDTO;
+import api.dto.EquipamentoRequestDTO;
 import api.entity.Equipamento;
 import api.exceptions.RequiredObjectIsNullException;
 import api.repository.EquipamentoRepository;
@@ -95,7 +95,7 @@ class EquipamentoServiceTest {
         Equipamento equipamento_persistido = equipamento;
         equipamento_persistido.setId(1L);
 
-        EquipamentoDTO dto = input.mockDTO(1);
+        EquipamentoRequestDTO dto = input.mockDTO(1);
 
         when(equipamentoRepository.save(equipamento)).thenReturn(equipamento_persistido);
 
@@ -162,7 +162,7 @@ class EquipamentoServiceTest {
         Equipamento equipamento_persistido = equipamento;
         equipamento_persistido.setId(1L);
 
-        EquipamentoDTO dto = input.mockDTO(1);
+        EquipamentoRequestDTO dto = input.mockDTO(1);
 
         when(equipamentoRepository.findById(1L)).thenReturn(Optional.of(equipamento));
         when(equipamentoRepository.save(equipamento)).thenReturn(equipamento_persistido);
@@ -243,7 +243,7 @@ class EquipamentoServiceTest {
 
         List<Equipamento> lista = input.mockEntityList();
         when(equipamentoRepository.findAll()).thenReturn(lista);
-        List<EquipamentoDTO> equipamentos = new ArrayList<>();
+        List<EquipamentoRequestDTO> equipamentos = new ArrayList<>();
 
         assertNotNull(equipamentos);
         assertEquals(14, equipamentos.size());

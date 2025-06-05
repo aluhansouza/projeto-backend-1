@@ -1,7 +1,8 @@
 package api.controllers;
 
 import api.controllers.docs.EquipamentoControllerDocs;
-import api.dto.EquipamentoDTO;
+import api.dto.EquipamentoRequestDTO;
+import api.dto.EquipamentoResponseDTO;
 import api.file.exporter.MediaTypes;
 import api.services.interfaces.EquipamentoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/equipamentos")
@@ -39,7 +41,7 @@ public class EquipamentoController implements EquipamentoControllerDocs {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_YAML_VALUE})
     @Override
-    public ResponseEntity<PagedModel<EntityModel<EquipamentoDTO>>> listar(
+    public ResponseEntity<PagedModel<EntityModel<EquipamentoResponseDTO>>> listar(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction
@@ -55,7 +57,7 @@ public class EquipamentoController implements EquipamentoControllerDocs {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_YAML_VALUE})
     @Override
-    public ResponseEntity<PagedModel<EntityModel<EquipamentoDTO>>> buscarPorNome(
+    public ResponseEntity<PagedModel<EntityModel<EquipamentoResponseDTO>>> buscarPorNome(
             @PathVariable("nome") String nome,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,
@@ -74,7 +76,7 @@ public class EquipamentoController implements EquipamentoControllerDocs {
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public EquipamentoDTO buscarPorId(@PathVariable("id") Long id) {
+    public EquipamentoResponseDTO buscarPorId(@PathVariable("id") Long id) {
         return equipamentoService.buscarPorId(id);
     }
 
@@ -90,8 +92,8 @@ public class EquipamentoController implements EquipamentoControllerDocs {
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public EquipamentoDTO cadastrar(@RequestBody EquipamentoDTO equipamentoDTO) {
-        return equipamentoService.cadastrar(equipamentoDTO);
+    public EquipamentoResponseDTO cadastrar(@RequestBody EquipamentoRequestDTO equipamentoRequestDTO) {
+        return equipamentoService.cadastrar(equipamentoRequestDTO);
     }
 
     @PutMapping(
@@ -105,8 +107,8 @@ public class EquipamentoController implements EquipamentoControllerDocs {
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public EquipamentoDTO atualizar(@RequestBody EquipamentoDTO equipamentoDTO) {
-        return equipamentoService.atualizar(equipamentoDTO);
+    public EquipamentoResponseDTO atualizar(@RequestBody EquipamentoRequestDTO equipamentoRequestDTO) {
+        return equipamentoService.atualizar(equipamentoRequestDTO);
     }
 
 
@@ -123,7 +125,8 @@ public class EquipamentoController implements EquipamentoControllerDocs {
 
     @GetMapping(value = "/exportarPagina", produces = {
             MediaTypes.APPLICATION_XLSX_VALUE,
-            MediaTypes.APPLICATION_CSV_VALUE})
+            MediaTypes.APPLICATION_CSV_VALUE,
+            MediaTypes.APPLICATION_PDF_VALUE})
     @Override
     public ResponseEntity<Resource> exportarPagina(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
@@ -143,9 +146,15 @@ public class EquipamentoController implements EquipamentoControllerDocs {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
         String timestamp = agora.format(formatter);
 
+        Map<String, String> extensionMap = Map.of(
+                MediaTypes.APPLICATION_XLSX_VALUE, ".xlsx",
+                MediaTypes.APPLICATION_CSV_VALUE, ".csv",
+                MediaTypes.APPLICATION_PDF_VALUE, ".pdf"
+        );
 
+        var fileExtension = extensionMap.getOrDefault(acceptHeader, "");
         var contentType = acceptHeader != null ? acceptHeader : "application/octet-stream";
-        var fileExtension = MediaTypes.APPLICATION_XLSX_VALUE.equalsIgnoreCase(acceptHeader) ? ".xlsx" : ".csv";
+
         var filename = "equipamento_exportado_" + timestamp + fileExtension;
 
         return ResponseEntity.ok()
@@ -163,8 +172,25 @@ public class EquipamentoController implements EquipamentoControllerDocs {
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public List<EquipamentoDTO> massCreation(@RequestParam("file") MultipartFile file) {
+    public List<EquipamentoResponseDTO> massCreation(@RequestParam("file") MultipartFile file) {
         return equipamentoService.massCreation(file);
+    }
+
+    @GetMapping(value = "/exportar/{id}",
+            produces = {
+                    MediaType.APPLICATION_PDF_VALUE}
+    )
+    @Override
+    public ResponseEntity<Resource> exportar(Long id, HttpServletRequest request) {
+        String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
+        Resource file = equipamentoService.exportEquipamento(id, acceptHeader);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(acceptHeader))
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=person.pdf")
+                .body(file);
     }
 
 

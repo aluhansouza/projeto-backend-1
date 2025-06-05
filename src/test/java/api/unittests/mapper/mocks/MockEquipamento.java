@@ -1,6 +1,6 @@
 package api.unittests.mapper.mocks;
 
-import api.dto.EquipamentoDTO;
+import api.dto.EquipamentoRequestDTO;
 import api.entity.Equipamento;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class MockEquipamento {
         return mockEntity(0);
     }
 
-    public EquipamentoDTO mockDTO() {
+    public EquipamentoRequestDTO mockDTO() {
         return mockDTO(0);
     }
 
@@ -24,8 +24,8 @@ public class MockEquipamento {
         return equipamentos;
     }
 
-    public List<EquipamentoDTO> mockDTOList() {
-        List<EquipamentoDTO> equipamentos = new ArrayList<>();
+    public List<EquipamentoRequestDTO> mockDTOList() {
+        List<EquipamentoRequestDTO> equipamentos = new ArrayList<>();
         for (int i = 0; i < 14; i++) {
             equipamentos.add(mockDTO(i));
         }
@@ -39,11 +39,11 @@ public class MockEquipamento {
         return equipamento;
     }
 
-    public EquipamentoDTO mockDTO(Integer number) {
-        EquipamentoDTO equipamentoDTO = new EquipamentoDTO();
-        equipamentoDTO.setId(number.longValue());
-        equipamentoDTO.setNome("Nome" + number);
-        return equipamentoDTO;
+    public EquipamentoRequestDTO mockDTO(Integer number) {
+        EquipamentoRequestDTO equipamentoRequestDTO = new EquipamentoRequestDTO();
+        equipamentoRequestDTO.setId(number.longValue());
+        equipamentoRequestDTO.setNome("Nome" + number);
+        return equipamentoRequestDTO;
     }
 
 

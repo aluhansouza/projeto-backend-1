@@ -1,6 +1,6 @@
 package api.file.importer.impl;
 
-import api.dto.EquipamentoDTO;
+import api.dto.EquipamentoRequestDTO;
 import api.file.importer.contract.FileImporter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -15,7 +15,7 @@ import java.util.List;
 public class CsvImporter implements FileImporter {
 
     @Override
-    public List<EquipamentoDTO> importFile(InputStream inputStream) throws Exception {
+    public List<EquipamentoRequestDTO> importFile(InputStream inputStream) throws Exception {
         CSVFormat format = CSVFormat.Builder.create()
                 .setHeader()
                 .setSkipHeaderRecord(true)
@@ -27,14 +27,14 @@ public class CsvImporter implements FileImporter {
         return parseRecordsToEquipamentoDTOs(records);
     }
 
-    private List<EquipamentoDTO> parseRecordsToEquipamentoDTOs(Iterable<CSVRecord> records) {
-        List<EquipamentoDTO> equipamentos = new ArrayList<>();
+    private List<EquipamentoRequestDTO> parseRecordsToEquipamentoDTOs(Iterable<CSVRecord> records) {
+        List<EquipamentoRequestDTO> equipamentos = new ArrayList<>();
 
         for (CSVRecord record : records) {
-            EquipamentoDTO equipamentoDTO = new EquipamentoDTO();
-            equipamentoDTO.setNome(record.get("nome"));
+            EquipamentoRequestDTO equipamentoRequestDTO = new EquipamentoRequestDTO();
+            equipamentoRequestDTO.setNome(record.get("nome"));
 
-            equipamentos.add(equipamentoDTO);
+            equipamentos.add(equipamentoRequestDTO);
         }
         return equipamentos;
     }

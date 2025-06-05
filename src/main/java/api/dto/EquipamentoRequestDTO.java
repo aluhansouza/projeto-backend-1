@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Relation(collectionRelation = "equipamentos")
-public class EquipamentoDTO extends RepresentationModel<EquipamentoDTO> implements Serializable {
+public class EquipamentoRequestDTO extends RepresentationModel<EquipamentoRequestDTO> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,17 +31,17 @@ public class EquipamentoDTO extends RepresentationModel<EquipamentoDTO> implemen
         this.nome = nome;
     }
 
-    public EquipamentoDTO() {
+    public EquipamentoRequestDTO() {
     }
 
-    public EquipamentoDTO(Long id, String nome) {
+    public EquipamentoRequestDTO(Long id, String nome) {
         this.id = id;
         this.nome = nome;
     }
 
     @Override
     public String toString() {
-        return "EquipamentoDTO{" +
+        return "EquipamentoRequestDTO{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 '}';
@@ -50,7 +50,7 @@ public class EquipamentoDTO extends RepresentationModel<EquipamentoDTO> implemen
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        EquipamentoDTO that = (EquipamentoDTO) o;
+        EquipamentoRequestDTO that = (EquipamentoRequestDTO) o;
         return Objects.equals(id, that.id) && Objects.equals(nome, that.nome);
     }
 

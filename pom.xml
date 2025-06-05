@@ -33,6 +33,11 @@
 		<testcontainers.version>1.21.0</testcontainers.version>
 		<apache.poi.version>5.4.1</apache.poi.version>
 		<commons-csv.version>1.14.0</commons-csv.version>
+		<jasperreports.version>7.0.3</jasperreports.version>
+		<jasperreports-fonts.version>7.0.3</jasperreports-fonts.version>
+		<jasperreports-pdf.version>7.0.3</jasperreports-pdf.version>
+		<jasperreports-javascript.version>7.0.3</jasperreports-javascript.version>
+		<zxing.version>3.5.3</zxing.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -80,6 +85,41 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>${apache.poi.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>${jasperreports.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-fonts</artifactId>
+			<version>${jasperreports.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-pdf</artifactId>
+			<version>${jasperreports.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-javascript</artifactId>
+			<version>${jasperreports-javascript.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>${zxing.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.zxing/javase -->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>${zxing.version}</version>
 		</dependency>
 
 

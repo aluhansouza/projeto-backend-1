@@ -1,0 +1,5 @@
+
+
+UPDATE tb_equipamentos
+SET qrcode_valor = CONCAT('http://localhost:8080/api/equipamentos/', id)
+where qrcode_valor is null

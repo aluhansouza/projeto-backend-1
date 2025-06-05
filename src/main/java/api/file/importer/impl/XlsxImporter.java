@@ -1,7 +1,6 @@
 package api.file.importer.impl;
 
-import org.apache.poi.ss.usermodel.DataFormatter;
-import api.dto.EquipamentoDTO;
+import api.dto.EquipamentoRequestDTO;
 import api.file.importer.contract.FileImporter;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -18,7 +17,7 @@ import java.util.List;
 public class XlsxImporter implements FileImporter {
 
     @Override
-    public List<EquipamentoDTO> importFile(InputStream inputStream) throws Exception {
+    public List<EquipamentoRequestDTO> importFile(InputStream inputStream) throws Exception {
 
         try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
             XSSFSheet sheet = workbook.getSheetAt(0);
@@ -31,8 +30,8 @@ public class XlsxImporter implements FileImporter {
         }
     }
 
-    private List<EquipamentoDTO> parseRowsToEquipamentoDtoList(Iterator<Row> rowIterator) {
-        List<EquipamentoDTO> equipamentos = new ArrayList<>();
+    private List<EquipamentoRequestDTO> parseRowsToEquipamentoDtoList(Iterator<Row> rowIterator) {
+        List<EquipamentoRequestDTO> equipamentos = new ArrayList<>();
 
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
@@ -46,10 +45,10 @@ public class XlsxImporter implements FileImporter {
 
 
     // Determinar a coluna, por exemplo Coluna 0 = ID, Coluna 1 = Nome
-    private EquipamentoDTO parseRowToEquipamentoDto(Row row) {
-        EquipamentoDTO equipamentoDTO = new EquipamentoDTO();
-        equipamentoDTO.setNome(row.getCell(1).getStringCellValue());
-        return equipamentoDTO;
+    private EquipamentoRequestDTO parseRowToEquipamentoDto(Row row) {
+        EquipamentoRequestDTO equipamentoRequestDTO = new EquipamentoRequestDTO();
+        equipamentoRequestDTO.setNome(row.getCell(1).getStringCellValue());
+        return equipamentoRequestDTO;
     }
 
 

@@ -1,13 +1,14 @@
 package api.services.impl;
 
 import api.controllers.EquipamentoController;
-import api.dto.EquipamentoDTO;
+import api.dto.EquipamentoRequestDTO;
+import api.dto.EquipamentoResponseDTO;
 import api.entity.Equipamento;
 import api.exceptions.BadRequestException;
 import api.exceptions.FileStorageException;
 import api.exceptions.RequiredObjectIsNullException;
 import api.exceptions.ResourceNotFoundException;
-import api.file.exporter.contract.FileExporter;
+import api.file.exporter.contract.EquipamentoExporter;
 import api.file.exporter.factory.FileExporterFactory;
 import api.file.importer.contract.FileImporter;
 import api.file.importer.factory.FileImporterFactory;
@@ -27,6 +28,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.InputStream;
 import java.util.List;
@@ -52,11 +54,11 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 
 
     @Autowired
-    PagedResourcesAssembler<EquipamentoDTO> assembler;
+    PagedResourcesAssembler<EquipamentoResponseDTO> assembler;
 
     @Override
     @Transactional(readOnly = true)
-    public PagedModel<EntityModel<EquipamentoDTO>> listar(Pageable pageable) {
+    public PagedModel<EntityModel<EquipamentoResponseDTO>> listar(Pageable pageable) {
 
         logger.info("Finding all Equipamentos!");
 
@@ -66,7 +68,7 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 
     @Override
     @Transactional(readOnly = true)
-    public PagedModel<EntityModel<EquipamentoDTO>> buscarPorNome(String nome, Pageable pageable) {
+    public PagedModel<EntityModel<EquipamentoResponseDTO>> buscarPorNome(String nome, Pageable pageable) {
 
         logger.info("Finding Equipamento by name!");
 
@@ -76,44 +78,61 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 
     @Override
     @Transactional(readOnly = true)
-    public EquipamentoDTO buscarPorId(Long id) {
+    public EquipamentoResponseDTO buscarPorId(Long id) {
         logger.info("Finding one Person!");
 
         var entity = equipamentoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
-        var dto = parseObject(entity, EquipamentoDTO.class);
+        var dto = parseObject(entity, EquipamentoResponseDTO.class);
         addHateoasLinks(dto);
         return dto;
     }
 
     @Override
     @Transactional
-    public EquipamentoDTO cadastrar(EquipamentoDTO equipamentoDTO) {
+    public EquipamentoResponseDTO cadastrar(EquipamentoRequestDTO equipamentoRequestDTO) {
 
+        if (equipamentoRequestDTO == null) {
+            throw new RequiredObjectIsNullException();
+        }
 
-        if (equipamentoDTO == null) throw new RequiredObjectIsNullException();
+        logger.info("Criando novo Equipamento!");
 
-        logger.info("Creating one Person!");
-        var entity = parseObject(equipamentoDTO, Equipamento.class);
+        var entity = parseObject(equipamentoRequestDTO, Equipamento.class);
 
-        var dto = parseObject(equipamentoRepository.save(entity), EquipamentoDTO.class);
+        var equipamentoSalvo = equipamentoRepository.save(entity);
+
+        // 3) Converte a entidade salva (com ID) para o DTO de resposta
+        var dto = parseObject(equipamentoSalvo, EquipamentoResponseDTO.class);
+
+        String url = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/api/equipamentos/{id}")
+                .buildAndExpand(equipamentoSalvo.getId())
+                .toUriString();
+        dto.setQrcodeValor(url);
+
+        logger.debug("Equipamento persistido com ID={} e qrcodevalor={}", dto.getId(), dto.getQrcodeValor());
+
         addHateoasLinks(dto);
+
         return dto;
+
     }
 
     @Override
     @Transactional
-    public EquipamentoDTO atualizar(EquipamentoDTO equipamentoDTO) {
+    public EquipamentoResponseDTO atualizar(EquipamentoRequestDTO equipamentoRequestDTO) {
 
-        if (equipamentoDTO == null) throw new RequiredObjectIsNullException();
+        if (equipamentoRequestDTO == null) throw new RequiredObjectIsNullException();
 
         logger.info("Updating one Person!");
-        Equipamento equipamento = equipamentoRepository.findById(equipamentoDTO.getId())
+        Equipamento equipamento = equipamentoRepository.findById(equipamentoRequestDTO.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
 
-        equipamento.setNome(equipamentoDTO.getNome());
+        equipamento.setNome(equipamentoRequestDTO.getNome());
 
-        var dto = parseObject(equipamentoRepository.save(equipamento), EquipamentoDTO.class);
+        var dto = parseObject(equipamentoRepository.save(equipamento), EquipamentoResponseDTO.class);
         addHateoasLinks(dto);
         return dto;
     }
@@ -138,12 +157,27 @@ public class EquipamentoServiceImpl implements EquipamentoService {
         logger.info("Exporting a Equipamento page!");
 
         var equipamentos = equipamentoRepository.findAll(pageable)
-                .map(equipamento -> parseObject(equipamento, EquipamentoDTO.class))
+                .map(equipamento -> parseObject(equipamento, EquipamentoResponseDTO.class))
                 .getContent();
 
         try {
-            FileExporter exporter = this.exporter.getExporter(acceptHeader);
-            return exporter.exportFile(equipamentos);
+            EquipamentoExporter exporter = this.exporter.getExporter(acceptHeader);
+            return exporter.exportEquipamentos(equipamentos);
+        } catch (Exception e) {
+            throw new RuntimeException("Error during file export!", e);
+        }
+    }
+
+    public Resource exportEquipamento(Long id, String acceptHeader) {
+        logger.info("Exporting data of one Equipamento!");
+
+        var equipamento = equipamentoRepository.findById(id)
+                .map(entity -> parseObject(entity, EquipamentoResponseDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
+
+        try {
+            EquipamentoExporter exporter = this.exporter.getExporter(acceptHeader);
+            return exporter.exportEquipamento(equipamento);
         } catch (Exception e) {
             throw new RuntimeException("Error during file export!", e);
         }
@@ -151,7 +185,7 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 
 
     @Override
-    public List<EquipamentoDTO> massCreation(MultipartFile file) {
+    public List<EquipamentoResponseDTO> massCreation(MultipartFile file) {
         logger.info("Importing People from file!");
 
         if (file.isEmpty()) throw new BadRequestException("Please set a Valid File!");
@@ -167,7 +201,7 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 
             return entities.stream()
                     .map(entity -> {
-                        var dto = parseObject(entity, EquipamentoDTO.class);
+                        var dto = parseObject(entity, EquipamentoResponseDTO.class);
                         addHateoasLinks(dto);
                         return dto;
                     })
@@ -178,11 +212,10 @@ public class EquipamentoServiceImpl implements EquipamentoService {
     }
 
 
+    private PagedModel<EntityModel<EquipamentoResponseDTO>> buildPagedModel(Pageable pageable, Page<Equipamento> equipamentos) {
 
-    private PagedModel<EntityModel<EquipamentoDTO>> buildPagedModel(Pageable pageable, Page<Equipamento> equipamentos) {
-
-        var equipamentosWithLinks = equipamentos.map(person -> {
-            var dto = parseObject(person, EquipamentoDTO.class);
+        var equipamentosWithLinks = equipamentos.map(equipamento -> {
+            var dto = parseObject(equipamento, EquipamentoResponseDTO.class);
             addHateoasLinks(dto);
             return dto;
         });
@@ -200,13 +233,13 @@ public class EquipamentoServiceImpl implements EquipamentoService {
 
 // ---------------------------------------------------------------------------------------------------------------//
 
-    private void addHateoasLinks(EquipamentoDTO dto) {
+    private void addHateoasLinks(EquipamentoResponseDTO dto) {
         dto.add(linkTo(methodOn(EquipamentoController.class).listar(1, 12, "asc")).withRel("listar").withType("GET"));
         dto.add(linkTo(methodOn(EquipamentoController.class).buscarPorNome("", 1, 12, "asc")).withRel("buscarPorNome").withType("GET"));
         dto.add(linkTo(methodOn(EquipamentoController.class).buscarPorId(dto.getId())).withSelfRel().withType("GET"));
-        dto.add(linkTo(methodOn(EquipamentoController.class).cadastrar(dto)).withRel("cadastrar").withType("POST"));
+        dto.add(linkTo(methodOn(EquipamentoController.class).cadastrar((EquipamentoRequestDTO) null)).withRel("cadastrar").withType("POST"));
         dto.add(linkTo(methodOn(EquipamentoController.class)).slash("massCreation").withRel("massCreation").withType("POST"));
-        dto.add(linkTo(methodOn(EquipamentoController.class).atualizar(dto)).withRel("atualizar").withType("PUT"));
+        dto.add(linkTo(methodOn(EquipamentoController.class).atualizar((EquipamentoRequestDTO) null)).withRel("atualizar").withType("PUT"));
         dto.add(linkTo(methodOn(EquipamentoController.class).excluir(dto.getId())).withRel("excluir").withType("DELETE"));
 
         dto.add(linkTo(methodOn(EquipamentoController.class)
@@ -217,6 +250,14 @@ public class EquipamentoServiceImpl implements EquipamentoService {
                 .withTitle("Exportar Equipamentos")
         );
     }
+
+
+
+    // ---------------------------------------------------------------------------------//
+
+
+
+
 }
 
 

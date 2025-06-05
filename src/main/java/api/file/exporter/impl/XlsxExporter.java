@@ -1,7 +1,7 @@
 package api.file.exporter.impl;
 
-import api.dto.EquipamentoDTO;
-import api.file.exporter.contract.FileExporter;
+import api.dto.EquipamentoResponseDTO;
+import api.file.exporter.contract.EquipamentoExporter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.ByteArrayResource;
@@ -12,10 +12,10 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 @Component
-public class XlsxExporter implements FileExporter {
+public class XlsxExporter implements EquipamentoExporter {
 
     @Override
-    public Resource exportFile(List<EquipamentoDTO> equipamentos) throws Exception {
+    public Resource exportEquipamentos(List<EquipamentoResponseDTO> equipamentos) throws Exception {
         try (Workbook workbook = new XSSFWorkbook()){
             Sheet sheet = workbook.createSheet("Equipamentos");
 
@@ -28,10 +28,10 @@ public class XlsxExporter implements FileExporter {
             }
 
             int rowIndex = 1;
-            for (EquipamentoDTO equipamentoDTO : equipamentos) {
+            for (EquipamentoResponseDTO equipamentoResponseDTO : equipamentos) {
                 Row row = sheet.createRow(rowIndex++);
-                row.createCell(0).setCellValue(equipamentoDTO.getId());
-                row.createCell(1).setCellValue(equipamentoDTO.getNome());
+                row.createCell(0).setCellValue(equipamentoResponseDTO.getId());
+                row.createCell(1).setCellValue(equipamentoResponseDTO.getNome());
             }
 
             for (int i = 0; i < headers.length; i++) {
@@ -53,6 +53,12 @@ public class XlsxExporter implements FileExporter {
         style.setAlignment(HorizontalAlignment.CENTER);
         return style;
     }
+
+    @Override
+    public Resource exportEquipamento(EquipamentoResponseDTO equipamento) throws Exception {
+        return null;
+    }
+
 
 
 }

@@ -47,7 +47,7 @@ public class EquipamentoDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "EquipamentoDTO{" +
+        return "EquipamentoRequestDTO{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 '}';

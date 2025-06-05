@@ -1,28 +1,24 @@
-package api.entity;
+package api.dto;
 
-
-import jakarta.persistence.*;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-
-@Table(name = "tb_equipamentos")
-@Entity
-public class Equipamento implements Serializable {
+@Relation(collectionRelation = "equipamentos")
+public class EquipamentoResponseDTO extends RepresentationModel<EquipamentoResponseDTO> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id", nullable = false)
     private Long id;
 
-    @Column(name="nome", nullable = false)
     private String nome;
 
-    @Column(name = "qrcode_valor", nullable = true)
     private String qrcodeValor;
+
+    public EquipamentoResponseDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -40,11 +36,6 @@ public class Equipamento implements Serializable {
         this.nome = nome;
     }
 
-    public Equipamento(Long id, String nome) {
-        this.id = id;
-        this.nome = nome;
-    }
-
     public String getQrcodeValor() {
         return qrcodeValor;
     }
@@ -53,26 +44,27 @@ public class Equipamento implements Serializable {
         this.qrcodeValor = qrcodeValor;
     }
 
-    public Equipamento() {}
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Equipamento that = (Equipamento) o;
+        if (!super.equals(o)) return false;
+        EquipamentoResponseDTO that = (EquipamentoResponseDTO) o;
         return Objects.equals(id, that.id) && Objects.equals(nome, that.nome) && Objects.equals(qrcodeValor, that.qrcodeValor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nome, qrcodeValor);
+        return Objects.hash(super.hashCode(), id, nome, qrcodeValor);
     }
 
     @Override
     public String toString() {
-        return "Equipamento{" +
+        return "EquipamentoResponseDTO{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 ", qrcodeValor='" + qrcodeValor + '\'' +
                 '}';
     }
 }
+
+

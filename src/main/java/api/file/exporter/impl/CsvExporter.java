@@ -1,7 +1,7 @@
 package api.file.exporter.impl;
 
-import api.dto.EquipamentoDTO;
-import api.file.exporter.contract.FileExporter;
+import api.dto.EquipamentoResponseDTO;
+import api.file.exporter.contract.EquipamentoExporter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.core.io.ByteArrayResource;
@@ -14,10 +14,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
-public class CsvExporter implements FileExporter {
+public class CsvExporter implements EquipamentoExporter {
 
     @Override
-    public Resource exportFile(List<EquipamentoDTO> equipamentos) throws Exception {
+    public Resource exportEquipamentos(List<EquipamentoResponseDTO> equipamentos) throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
 
@@ -27,7 +27,7 @@ public class CsvExporter implements FileExporter {
                 .build();
 
         try (CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat)) {
-            for (EquipamentoDTO equipamento : equipamentos) {
+            for (EquipamentoResponseDTO equipamento : equipamentos) {
                 csvPrinter.printRecord(
                         equipamento.getId(),
                         equipamento.getNome()
@@ -36,5 +36,10 @@ public class CsvExporter implements FileExporter {
 
         }
         return new ByteArrayResource(outputStream.toByteArray());
+    }
+
+    @Override
+    public Resource exportEquipamento(EquipamentoResponseDTO equipamento) throws Exception {
+        return null;
     }
 }

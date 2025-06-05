@@ -1,9 +1,8 @@
 package api.services.interfaces;
 
-import api.dto.EquipamentoDTO;
-import api.entity.Equipamento;
+import api.dto.EquipamentoRequestDTO;
+import api.dto.EquipamentoResponseDTO;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -15,15 +14,15 @@ import java.util.List;
 public interface EquipamentoService {
 
 
-    PagedModel<EntityModel<EquipamentoDTO>> listar(Pageable pageable);
+    PagedModel<EntityModel<EquipamentoResponseDTO>> listar(Pageable pageable);
 
-    PagedModel<EntityModel<EquipamentoDTO>> buscarPorNome(String nome, Pageable pageable);
+    PagedModel<EntityModel<EquipamentoResponseDTO>> buscarPorNome(String nome, Pageable pageable);
 
-    EquipamentoDTO buscarPorId(Long id);
+    EquipamentoResponseDTO buscarPorId(Long id);
 
-    EquipamentoDTO cadastrar(EquipamentoDTO equipamentoDTO);
+    EquipamentoResponseDTO cadastrar(EquipamentoRequestDTO equipamentoRequestDTO);
 
-    EquipamentoDTO atualizar(EquipamentoDTO equipamentoDTO);
+    EquipamentoResponseDTO atualizar(EquipamentoRequestDTO equipamentoRequestDTO);
 
     void excluir(Long id);
 
@@ -31,7 +30,9 @@ public interface EquipamentoService {
 
     Resource exportarPagina(Pageable pageable, String acceptHeader);
 
-    List<EquipamentoDTO> massCreation(MultipartFile file);
+    Resource exportEquipamento(Long id, String acceptHeader);
+
+    List<EquipamentoResponseDTO> massCreation(MultipartFile file);
 
 
 }
