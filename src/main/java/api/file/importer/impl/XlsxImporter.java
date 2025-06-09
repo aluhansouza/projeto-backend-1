@@ -1,6 +1,6 @@
 package api.file.importer.impl;
 
-import api.dto.EquipamentoRequestDTO;
+import api.dto.request.EquipamentoRequestDTO;
 import api.file.importer.contract.FileImporter;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;

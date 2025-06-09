@@ -1,6 +1,6 @@
 package api.file.exporter.impl;
 
-import api.dto.EquipamentoResponseDTO;
+import api.dto.response.EquipamentoResponseDTO;
 import api.file.exporter.contract.EquipamentoExporter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;

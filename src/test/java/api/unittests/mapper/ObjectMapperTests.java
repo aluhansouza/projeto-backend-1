@@ -1,6 +1,6 @@
 package api.unittests.mapper;
 
-import api.dto.EquipamentoRequestDTO;
+import api.dto.request.EquipamentoRequestDTO;
 import api.entity.Equipamento;
 import api.unittests.mapper.mocks.MockEquipamento;
 import org.junit.jupiter.api.BeforeEach;

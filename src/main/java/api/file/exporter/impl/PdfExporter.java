@@ -1,6 +1,6 @@
 package api.file.exporter.impl;
 
-import api.dto.EquipamentoResponseDTO;
+import api.dto.response.EquipamentoResponseDTO;
 import api.file.exporter.contract.EquipamentoExporter;
 import api.services.utils.QRCodeService;
 import net.sf.jasperreports.engine.*;

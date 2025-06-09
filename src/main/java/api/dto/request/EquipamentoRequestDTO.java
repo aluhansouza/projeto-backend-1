@@ -1,4 +1,4 @@
-package api.dto;
+package api.dto.request;
 
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;

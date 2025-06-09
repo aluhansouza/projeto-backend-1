@@ -1,7 +1,7 @@
-package api.controllers;
+package api.controllers.utils;
 
 import api.controllers.docs.FileControllerDocs;
-import api.dto.UploadFileResponseDTO;
+import api.dto.response.UploadFileResponseDTO;
 import api.services.utils.FileStorageService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;

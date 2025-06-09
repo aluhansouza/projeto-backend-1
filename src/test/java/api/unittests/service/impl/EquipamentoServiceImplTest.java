@@ -1,6 +1,6 @@
 package api.unittests.service.impl;
 
-import api.dto.EquipamentoRequestDTO;
+import api.dto.request.EquipamentoRequestDTO;
 import api.entity.Equipamento;
 import api.exceptions.RequiredObjectIsNullException;
 import api.repository.EquipamentoRepository;

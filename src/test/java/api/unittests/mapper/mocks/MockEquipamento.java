@@ -1,6 +1,6 @@
 package api.unittests.mapper.mocks;
 
-import api.dto.EquipamentoRequestDTO;
+import api.dto.request.EquipamentoRequestDTO;
 import api.entity.Equipamento;
 
 import java.util.ArrayList;

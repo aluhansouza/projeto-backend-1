@@ -1,6 +1,6 @@
 package api.file.exporter.contract;
 
-import api.dto.EquipamentoResponseDTO;
+import api.dto.response.EquipamentoResponseDTO;
 import org.springframework.core.io.Resource;
 
 import java.util.List;

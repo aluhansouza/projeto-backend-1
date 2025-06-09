@@ -1,6 +1,6 @@
 package api.controllers.docs;
 
-import api.dto.UploadFileResponseDTO;
+import api.dto.response.UploadFileResponseDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.io.Resource;

@@ -1,8 +1,8 @@
 package api.controllers;
 
 import api.controllers.docs.EquipamentoControllerDocs;
-import api.dto.EquipamentoRequestDTO;
-import api.dto.EquipamentoResponseDTO;
+import api.dto.request.EquipamentoRequestDTO;
+import api.dto.response.EquipamentoResponseDTO;
 import api.file.exporter.MediaTypes;
 import api.services.interfaces.EquipamentoService;
 import io.swagger.v3.oas.annotations.tags.Tag;

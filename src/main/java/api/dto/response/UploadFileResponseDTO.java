@@ -1,4 +1,4 @@
-package api.dto;
+package api.dto.response;
 
 import java.io.Serializable;
 import java.util.Objects;

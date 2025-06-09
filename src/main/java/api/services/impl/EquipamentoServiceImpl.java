@@ -1,8 +1,8 @@
 package api.services.impl;
 
 import api.controllers.EquipamentoController;
-import api.dto.EquipamentoRequestDTO;
-import api.dto.EquipamentoResponseDTO;
+import api.dto.request.EquipamentoRequestDTO;
+import api.dto.response.EquipamentoResponseDTO;
 import api.entity.Equipamento;
 import api.exceptions.BadRequestException;
 import api.exceptions.FileStorageException;

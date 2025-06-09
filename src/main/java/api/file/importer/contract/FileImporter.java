@@ -1,6 +1,6 @@
 package api.file.importer.contract;
 
-import api.dto.EquipamentoRequestDTO;
+import api.dto.request.EquipamentoRequestDTO;
 
 import java.io.InputStream;
 import java.util.List;

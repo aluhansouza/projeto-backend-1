@@ -1,7 +1,7 @@
 package api.services.interfaces;
 
-import api.dto.EquipamentoRequestDTO;
-import api.dto.EquipamentoResponseDTO;
+import api.dto.request.EquipamentoRequestDTO;
+import api.dto.response.EquipamentoResponseDTO;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;

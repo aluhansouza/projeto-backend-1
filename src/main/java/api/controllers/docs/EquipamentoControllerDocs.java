@@ -1,7 +1,7 @@
 package api.controllers.docs;
 
-import api.dto.EquipamentoRequestDTO;
-import api.dto.EquipamentoResponseDTO;
+import api.dto.request.EquipamentoRequestDTO;
+import api.dto.response.EquipamentoResponseDTO;
 import api.file.exporter.MediaTypes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
