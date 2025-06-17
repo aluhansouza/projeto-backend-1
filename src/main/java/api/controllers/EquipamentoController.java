@@ -181,7 +181,7 @@ public class EquipamentoController implements EquipamentoControllerDocs {
                     MediaType.APPLICATION_PDF_VALUE}
     )
     @Override
-    public ResponseEntity<Resource> exportar(Long id, HttpServletRequest request) {
+    public ResponseEntity<Resource> exportar(@PathVariable("id") Long id, HttpServletRequest request) {
         String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
         Resource file = equipamentoService.exportEquipamento(id, acceptHeader);
 
@@ -189,7 +189,7 @@ public class EquipamentoController implements EquipamentoControllerDocs {
                 .contentType(MediaType.parseMediaType(acceptHeader))
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=person.pdf")
+                        "attachment; filename=equipamento.pdf")
                 .body(file);
     }
 

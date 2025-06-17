@@ -1,4 +1,4 @@
-package api.file.exporter.impl;
+package api.file.exporter.impl.equipamento;
 
 import api.dto.response.EquipamentoResponseDTO;
 import api.file.exporter.contract.EquipamentoExporter;

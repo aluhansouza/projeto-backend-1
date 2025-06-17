@@ -2,9 +2,16 @@ package api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
 
-@SpringBootApplication
+@SpringBootApplication(
+// exclui toda a configuração de security
+		exclude = {
+				SecurityAutoConfiguration .class,
+				org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration.class
+		}
+)
 public class ApiApplication {
 
 

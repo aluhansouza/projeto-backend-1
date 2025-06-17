@@ -3,9 +3,9 @@ package api.file.exporter.factory;
 import api.exceptions.BadRequestException;
 import api.file.exporter.MediaTypes;
 import api.file.exporter.contract.EquipamentoExporter;
-import api.file.exporter.impl.CsvExporter;
-import api.file.exporter.impl.PdfExporter;
-import api.file.exporter.impl.XlsxExporter;
+import api.file.exporter.impl.equipamento.CsvExporter;
+import api.file.exporter.impl.equipamento.PdfExporter;
+import api.file.exporter.impl.equipamento.XlsxExporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,7 @@ public class FileExporterFactory {
     private ApplicationContext context;
 
     public EquipamentoExporter getExporter(String acceptHeader) throws Exception {
+        logger.info("getExporter() got Accept header: [{}]", acceptHeader);
         if (acceptHeader.equalsIgnoreCase(MediaTypes.APPLICATION_XLSX_VALUE)) {
             return context.getBean(XlsxExporter.class);
         } else if (acceptHeader.equalsIgnoreCase(MediaTypes.APPLICATION_CSV_VALUE)) {
