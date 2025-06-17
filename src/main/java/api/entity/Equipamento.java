@@ -1,6 +1,6 @@
 package api.entity;
 
-
+import api.entity.audit.Auditable;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Table(name = "tb_equipamentos")
 @Entity
-public class Equipamento implements Serializable {
+public class Equipamento  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,6 +20,8 @@ public class Equipamento implements Serializable {
 
     @Column(name="nome", nullable = false)
     private String nome;
+
+    private String sobreNome;
 
     @Column(name = "qrcode_valor", nullable = true)
     private String qrcodeValor;
@@ -43,6 +45,14 @@ public class Equipamento implements Serializable {
     public Equipamento(Long id, String nome) {
         this.id = id;
         this.nome = nome;
+    }
+
+    public String getSobreNome() {
+        return sobreNome;
+    }
+
+    public void setSobreNome(String sobreNome) {
+        this.sobreNome = sobreNome;
     }
 
     public String getQrcodeValor() {
