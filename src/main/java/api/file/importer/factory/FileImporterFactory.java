@@ -1,7 +1,7 @@
 package api.file.importer.factory;
 
 import api.exceptions.BadRequestException;
-import api.file.importer.contract.FileImporter;
+import api.file.importer.contract.MaterialImporter;
 import api.file.importer.impl.CsvImporter;
 import api.file.importer.impl.XlsxImporter;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ public class FileImporterFactory {
     @Autowired
     private ApplicationContext context;
 
-    public FileImporter getImporter(String fileName) throws Exception {
+    public MaterialImporter getImporter(String fileName) throws Exception {
         if (fileName.endsWith(".xlsx")) {
             return context.getBean(XlsxImporter.class);
         } else if (fileName.endsWith(".csv")) {

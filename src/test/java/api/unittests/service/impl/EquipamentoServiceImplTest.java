@@ -3,7 +3,7 @@ package api.unittests.service.impl;
 import api.dto.request.EquipamentoRequestDTO;
 import api.entity.Equipamento;
 import api.exceptions.RequiredObjectIsNullException;
-import api.repository.EquipamentoRepository;
+import api.repository.MaterialRepository;
 import api.services.impl.EquipamentoServiceImpl;
 import api.unittests.mapper.mocks.MockEquipamento;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +33,7 @@ class EquipamentoServiceTest {
     private EquipamentoServiceImpl equipamentoService;
 
     @Mock
-    EquipamentoRepository equipamentoRepository;
+    MaterialRepository materialRepository;
 
     @BeforeEach
     void setUp() {
@@ -46,7 +46,7 @@ class EquipamentoServiceTest {
 
         Equipamento equipamento = input.mockEntity(1);
         equipamento.setId(1L);
-        when(equipamentoRepository.findById(1L)).thenReturn(Optional.of(equipamento));
+        when(materialRepository.findById(1L)).thenReturn(Optional.of(equipamento));
 
         var resultado = equipamentoService.buscarPorId(1L);
 
@@ -97,7 +97,7 @@ class EquipamentoServiceTest {
 
         EquipamentoRequestDTO dto = input.mockDTO(1);
 
-        when(equipamentoRepository.save(equipamento)).thenReturn(equipamento_persistido);
+        when(materialRepository.save(equipamento)).thenReturn(equipamento_persistido);
 
         var resultado = equipamentoService.cadastrar(dto);
 
@@ -164,8 +164,8 @@ class EquipamentoServiceTest {
 
         EquipamentoRequestDTO dto = input.mockDTO(1);
 
-        when(equipamentoRepository.findById(1L)).thenReturn(Optional.of(equipamento));
-        when(equipamentoRepository.save(equipamento)).thenReturn(equipamento_persistido);
+        when(materialRepository.findById(1L)).thenReturn(Optional.of(equipamento));
+        when(materialRepository.save(equipamento)).thenReturn(equipamento_persistido);
 
         var resultado = equipamentoService.atualizar(dto);
 
@@ -228,12 +228,12 @@ class EquipamentoServiceTest {
 
         Equipamento equipamento = input.mockEntity(1);
         equipamento.setId(1L);
-        when(equipamentoRepository.findById(1L)).thenReturn(Optional.of(equipamento));
+        when(materialRepository.findById(1L)).thenReturn(Optional.of(equipamento));
 
         equipamentoService.excluir(1L);
-        verify(equipamentoRepository, times(1)).findById(anyLong());
-        verify(equipamentoRepository, times(1)).delete(any(Equipamento.class));
-        verifyNoMoreInteractions(equipamentoRepository);
+        verify(materialRepository, times(1)).findById(anyLong());
+        verify(materialRepository, times(1)).delete(any(Equipamento.class));
+        verifyNoMoreInteractions(materialRepository);
 
     }
 
@@ -242,7 +242,7 @@ class EquipamentoServiceTest {
     void listar() {
 
         List<Equipamento> lista = input.mockEntityList();
-        when(equipamentoRepository.findAll()).thenReturn(lista);
+        when(materialRepository.findAll()).thenReturn(lista);
         List<EquipamentoRequestDTO> equipamentos = new ArrayList<>();
 
         assertNotNull(equipamentos);

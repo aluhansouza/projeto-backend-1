@@ -1,7 +1,7 @@
 package api.file.importer.impl;
 
-import api.dto.request.EquipamentoRequestDTO;
-import api.file.importer.contract.FileImporter;
+import api.dto.request.MaterialRequestDTO;
+import api.file.importer.contract.MaterialImporter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Component;
@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class CsvImporter implements FileImporter {
+public class CsvImporter implements MaterialImporter {
 
     @Override
-    public List<EquipamentoRequestDTO> importFile(InputStream inputStream) throws Exception {
+    public List<MaterialRequestDTO> importFile(InputStream inputStream) throws Exception {
         CSVFormat format = CSVFormat.Builder.create()
                 .setHeader()
                 .setSkipHeaderRecord(true)
@@ -24,18 +24,18 @@ public class CsvImporter implements FileImporter {
                 .build();
 
         Iterable<CSVRecord> records = format.parse(new InputStreamReader(inputStream));
-        return parseRecordsToEquipamentoDTOs(records);
+        return parseRecordsToMateriaisDTOs(records);
     }
 
-    private List<EquipamentoRequestDTO> parseRecordsToEquipamentoDTOs(Iterable<CSVRecord> records) {
-        List<EquipamentoRequestDTO> equipamentos = new ArrayList<>();
+    private List<MaterialRequestDTO> parseRecordsToMateriaisDTOs(Iterable<CSVRecord> records) {
+        List<MaterialRequestDTO> materiais = new ArrayList<>();
 
         for (CSVRecord record : records) {
-            EquipamentoRequestDTO equipamentoRequestDTO = new EquipamentoRequestDTO();
-            equipamentoRequestDTO.setNome(record.get("nome"));
+            MaterialRequestDTO materialRequestDTO = new MaterialRequestDTO();
+            materialRequestDTO.setNome(record.get("nome"));
 
-            equipamentos.add(equipamentoRequestDTO);
+            materiais.add(materialRequestDTO);
         }
-        return equipamentos;
+        return materiais;
     }
 }

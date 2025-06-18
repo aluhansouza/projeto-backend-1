@@ -1,10 +1,10 @@
 package api.controllers;
 
-import api.controllers.docs.EquipamentoControllerDocs;
-import api.dto.request.EquipamentoRequestDTO;
-import api.dto.response.EquipamentoResponseDTO;
+import api.controllers.docs.MaterialControllerDocs;
+import api.dto.request.MaterialRequestDTO;
+import api.dto.response.MaterialResponseDTO;
 import api.file.exporter.MediaTypes;
-import api.services.interfaces.EquipamentoService;
+import api.services.interfaces.MaterialService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/equipamentos")
-@Tag(name = "Equipamentos", description = "Endpoints para Equipamentos")
-public class EquipamentoController implements EquipamentoControllerDocs {
+@RequestMapping("/api/v1/materiais")
+@Tag(name = "Materiais", description = "Endpoints para Materiais")
+public class MaterialController implements MaterialControllerDocs {
 
 
     @Autowired
-    private EquipamentoService equipamentoService;
+    private MaterialService materialService;
 
 
     @GetMapping(produces = {
@@ -41,14 +41,14 @@ public class EquipamentoController implements EquipamentoControllerDocs {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_YAML_VALUE})
     @Override
-    public ResponseEntity<PagedModel<EntityModel<EquipamentoResponseDTO>>> listar(
+    public ResponseEntity<PagedModel<EntityModel<MaterialResponseDTO>>> listar(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction
     ) {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Direction.DESC : Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "nome"));
-        return ResponseEntity.ok(equipamentoService.listar(pageable));
+        return ResponseEntity.ok(materialService.listar(pageable));
     }
 
 
@@ -57,7 +57,7 @@ public class EquipamentoController implements EquipamentoControllerDocs {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_YAML_VALUE})
     @Override
-    public ResponseEntity<PagedModel<EntityModel<EquipamentoResponseDTO>>> buscarPorNome(
+    public ResponseEntity<PagedModel<EntityModel<MaterialResponseDTO>>> buscarPorNome(
             @PathVariable("nome") String nome,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,
@@ -65,7 +65,7 @@ public class EquipamentoController implements EquipamentoControllerDocs {
     ) {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Direction.DESC : Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, "nome"));
-        return ResponseEntity.ok(equipamentoService.buscarPorNome(nome, pageable));
+        return ResponseEntity.ok(materialService.buscarPorNome(nome, pageable));
     }
 
 
@@ -76,8 +76,8 @@ public class EquipamentoController implements EquipamentoControllerDocs {
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public EquipamentoResponseDTO buscarPorId(@PathVariable("id") Long id) {
-        return equipamentoService.buscarPorId(id);
+    public MaterialResponseDTO buscarPorId(@PathVariable("id") Long id) {
+        return materialService.buscarPorId(id);
     }
 
 
@@ -92,8 +92,8 @@ public class EquipamentoController implements EquipamentoControllerDocs {
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public EquipamentoResponseDTO cadastrar(@RequestBody EquipamentoRequestDTO equipamentoRequestDTO) {
-        return equipamentoService.cadastrar(equipamentoRequestDTO);
+    public MaterialResponseDTO cadastrar(@RequestBody MaterialRequestDTO materialRequestDTO) {
+        return materialService.cadastrar(materialRequestDTO);
     }
 
     @PutMapping(
@@ -107,15 +107,15 @@ public class EquipamentoController implements EquipamentoControllerDocs {
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public EquipamentoResponseDTO atualizar(@RequestBody EquipamentoRequestDTO equipamentoRequestDTO) {
-        return equipamentoService.atualizar(equipamentoRequestDTO);
+    public MaterialResponseDTO atualizar(@RequestBody MaterialRequestDTO materialRequestDTO) {
+        return materialService.atualizar(materialRequestDTO);
     }
 
 
     @DeleteMapping(value = "/{id}")
     @Override
     public ResponseEntity<?> excluir(@PathVariable("id") Long id) {
-        equipamentoService.excluir(id);
+        materialService.excluir(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -139,9 +139,9 @@ public class EquipamentoController implements EquipamentoControllerDocs {
 
         String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
 
-        Resource file = equipamentoService.exportarPagina(pageable, acceptHeader);
+        Resource file = materialService.exportarPagina(pageable, acceptHeader);
 
-        // 1. Obter o timestamp atual e formatar como string (ex.: 20250601_153045)
+      //Obter o timestamp atual e formatar como string (ex.: 20250601_153045)
         LocalDateTime agora = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
         String timestamp = agora.format(formatter);
@@ -155,7 +155,7 @@ public class EquipamentoController implements EquipamentoControllerDocs {
         var fileExtension = extensionMap.getOrDefault(acceptHeader, "");
         var contentType = acceptHeader != null ? acceptHeader : "application/octet-stream";
 
-        var filename = "equipamento_exportado_" + timestamp + fileExtension;
+        var filename = "material_exportado_" + timestamp + fileExtension;
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
@@ -172,8 +172,8 @@ public class EquipamentoController implements EquipamentoControllerDocs {
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public List<EquipamentoResponseDTO> massCreation(@RequestParam("file") MultipartFile file) {
-        return equipamentoService.massCreation(file);
+    public List<MaterialResponseDTO> massCreation(@RequestParam("file") MultipartFile file) {
+        return materialService.massCreation(file);
     }
 
     @GetMapping(value = "/exportar/{id}",
@@ -183,13 +183,13 @@ public class EquipamentoController implements EquipamentoControllerDocs {
     @Override
     public ResponseEntity<Resource> exportar(@PathVariable("id") Long id, HttpServletRequest request) {
         String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
-        Resource file = equipamentoService.exportEquipamento(id, acceptHeader);
+        Resource file = materialService.exportMaterial(id, acceptHeader);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(acceptHeader))
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=equipamento.pdf")
+                        "attachment; filename=material.pdf")
                 .body(file);
     }
 

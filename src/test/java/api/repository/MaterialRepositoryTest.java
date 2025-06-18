@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class EquipamentoRepositoryTest extends AbstractIntegrationTest {
+public class MaterialRepositoryTest extends AbstractIntegrationTest {
 
     @Autowired
-    EquipamentoRepository equipamentoRepository;
+    MaterialRepository materialRepository;
     private static Equipamento equipamento;
 
     @BeforeAll
@@ -38,7 +38,7 @@ public class EquipamentoRepositoryTest extends AbstractIntegrationTest {
                 12,
                 Sort.by(Sort.Direction.ASC, "nome"));
 
-        equipamento = equipamentoRepository.buscarPorNome("jo", pageable).getContent().get(0);
+        equipamento = materialRepository.buscarPorNome("jo", pageable).getContent().get(0);
 
         assertNotNull(equipamento);
         assertNotNull(equipamento.getId());

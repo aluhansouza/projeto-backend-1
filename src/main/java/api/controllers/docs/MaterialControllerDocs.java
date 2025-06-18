@@ -1,7 +1,7 @@
 package api.controllers.docs;
 
-import api.dto.request.EquipamentoRequestDTO;
-import api.dto.response.EquipamentoResponseDTO;
+import api.dto.request.MaterialRequestDTO;
+import api.dto.response.MaterialResponseDTO;
 import api.file.exporter.MediaTypes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public interface EquipamentoControllerDocs {
+public interface MaterialControllerDocs {
 
     @Operation(summary = "Método Listar",
             description = "Método Listar",
@@ -33,7 +33,7 @@ public interface EquipamentoControllerDocs {
                             content = {
                                     @Content(
                                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                            array = @ArraySchema(schema = @Schema(implementation = EquipamentoRequestDTO.class))
+                                            array = @ArraySchema(schema = @Schema(implementation = MaterialRequestDTO.class))
                                     )
                             }),
                     @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
@@ -43,7 +43,7 @@ public interface EquipamentoControllerDocs {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    ResponseEntity<PagedModel<EntityModel<EquipamentoResponseDTO>>> listar(
+    ResponseEntity<PagedModel<EntityModel<MaterialResponseDTO>>> listar(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction
@@ -60,7 +60,7 @@ public interface EquipamentoControllerDocs {
                             content = {
                                     @Content(
                                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                            array = @ArraySchema(schema = @Schema(implementation = EquipamentoRequestDTO.class))
+                                            array = @ArraySchema(schema = @Schema(implementation = MaterialRequestDTO.class))
                                     )
                             }),
                     @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
@@ -70,7 +70,7 @@ public interface EquipamentoControllerDocs {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    ResponseEntity<PagedModel<EntityModel<EquipamentoResponseDTO>>> buscarPorNome(
+    ResponseEntity<PagedModel<EntityModel<MaterialResponseDTO>>> buscarPorNome(
             @PathVariable("nome") String nome,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,
@@ -85,7 +85,7 @@ public interface EquipamentoControllerDocs {
                     @ApiResponse(
                             description = "Success",
                             responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = EquipamentoRequestDTO.class))
+                            content = @Content(schema = @Schema(implementation = MaterialRequestDTO.class))
                     ),
                     @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -94,7 +94,7 @@ public interface EquipamentoControllerDocs {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    EquipamentoResponseDTO buscarPorId(@PathVariable("id") Long id);
+    MaterialResponseDTO buscarPorId(@PathVariable("id") Long id);
 
     @Operation(summary = "Método Cadastrar",
             description = "\"Método Cadastrar",
@@ -103,14 +103,14 @@ public interface EquipamentoControllerDocs {
                     @ApiResponse(
                             description = "Success",
                             responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = EquipamentoRequestDTO.class))
+                            content = @Content(schema = @Schema(implementation = MaterialRequestDTO.class))
                     ),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
                     @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    EquipamentoResponseDTO cadastrar(@RequestBody EquipamentoRequestDTO equipamentoRequestDTO);
+    MaterialResponseDTO cadastrar(@RequestBody MaterialRequestDTO materialRequestDTO);
 
     @Operation(summary = "Método Atualizar",
             description = "Método Atualizar",
@@ -119,7 +119,7 @@ public interface EquipamentoControllerDocs {
                     @ApiResponse(
                             description = "Success",
                             responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = EquipamentoRequestDTO.class))
+                            content = @Content(schema = @Schema(implementation = MaterialRequestDTO.class))
                     ),
                     @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -128,7 +128,7 @@ public interface EquipamentoControllerDocs {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    EquipamentoResponseDTO atualizar(@RequestBody EquipamentoRequestDTO equipamentoRequestDTO);
+    MaterialResponseDTO atualizar(@RequestBody MaterialRequestDTO MaterialRequestDTO);
 
     @Operation(summary = "Método Excluir",
             description = "Método Excluir",
@@ -148,9 +148,9 @@ public interface EquipamentoControllerDocs {
 
 // ---------------------------------------------------------------///
 
-    @Operation(summary = "Export Equipamento",
-            description = "Export a Page of Equipamento in XLSX and CSV format and PDF format",
-            tags = {"Equipamentos"},
+    @Operation(summary = "Export Material",
+            description = "Export a Page of Material in XLSX and CSV format and PDF format",
+            tags = {"Materiais"},
             responses = {
                     @ApiResponse(
                             description = "Success",
@@ -174,15 +174,15 @@ public interface EquipamentoControllerDocs {
             HttpServletRequest request
     );
 
-    @Operation(summary = "Massive Equipamento Creation",
-            description = "Massive Equipamento Creation with upload of XLSX or CSV",
-            tags = {"Equipamentos"},
+    @Operation(summary = "Massive Material Creation",
+            description = "Massive Material Creation with upload of XLSX or CSV",
+            tags = {"Materiais"},
             responses = {
                     @ApiResponse(
                             description = "Success",
                             responseCode = "200",
                             content = {
-                                    @Content(schema = @Schema(implementation = EquipamentoRequestDTO.class))
+                                    @Content(schema = @Schema(implementation = MaterialRequestDTO.class))
                             }),
                     @ApiResponse(description = "No Content", responseCode = "204", content = @Content),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -191,15 +191,15 @@ public interface EquipamentoControllerDocs {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    List<EquipamentoResponseDTO> massCreation(MultipartFile file);
+    List<MaterialResponseDTO> massCreation(MultipartFile file);
 
 
 
     // --------------------------------------------------------------------------//
 
-    @Operation(summary = "Export Equipamento data as PDF",
-            description = "Export a specific Equipamento data as PDF by your ID",
-            tags = {"Equipamentos"},
+    @Operation(summary = "Export Material data as PDF",
+            description = "Export a specific Material data as PDF by your ID",
+            tags = {"Materiais"},
             responses = {
                     @ApiResponse(
                             description = "Success",

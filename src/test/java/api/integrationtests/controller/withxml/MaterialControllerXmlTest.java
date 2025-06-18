@@ -1,12 +1,12 @@
-package api.integrationtests.controller.withjson;
+package api.integrationtests.controller.withxml;
 
 import api.config.TestConfigs;
 import api.integrationtests.dto.EquipamentoDTO;
-import api.integrationtests.dto.wrappers.json.WrapperEquipamentoDTO;
+import api.integrationtests.dto.wrappers.xmlandyaml.PagedModelEquipamento;
 import api.integrationtests.testcontainers.AbstractIntegrationTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -25,17 +25,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "server.port=8888" })
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class EquipamentoControllerJsonTest extends AbstractIntegrationTest {
+public class MaterialControllerXmlTest extends AbstractIntegrationTest {
+
 
     private static RequestSpecification specification;
-    private static ObjectMapper objectMapper;
+    private static XmlMapper objectMapper;
 
     private static EquipamentoDTO equipamentoDTO;
 
     @BeforeAll
     static void setUp() {
-        objectMapper = new ObjectMapper();
+        objectMapper = new XmlMapper();
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
         equipamentoDTO = new EquipamentoDTO();
     }
 
@@ -53,13 +55,14 @@ public class EquipamentoControllerJsonTest extends AbstractIntegrationTest {
                 .build();
 
         var content = given(specification)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
+                .accept(MediaType.APPLICATION_XML_VALUE)
                 .body(equipamentoDTO)
                 .when()
                 .post()
                 .then()
                 .statusCode(200)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
                 .extract()
                 .body()
                 .asString();
@@ -77,16 +80,17 @@ public class EquipamentoControllerJsonTest extends AbstractIntegrationTest {
     @Test
     @Order(2)
     void updateTest() throws JsonProcessingException {
-        equipamentoDTO.setNome("Teste 2");
+        equipamentoDTO.setNome("Teste2027");
 
         var content = given(specification)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
+                .accept(MediaType.APPLICATION_XML_VALUE)
                 .body(equipamentoDTO)
                 .when()
                 .put()
                 .then()
                 .statusCode(200)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
                 .extract()
                 .body()
                 .asString();
@@ -97,7 +101,7 @@ public class EquipamentoControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(criadoEquipamento.getId());
         assertTrue(criadoEquipamento.getId() > 0);
 
-        assertEquals("Teste 2", criadoEquipamento.getNome());
+        assertEquals("Teste2027", criadoEquipamento.getNome());
 
     }
 
@@ -106,13 +110,14 @@ public class EquipamentoControllerJsonTest extends AbstractIntegrationTest {
     void findByIdTest() throws JsonProcessingException {
 
         var content = given(specification)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
+                .accept(MediaType.APPLICATION_XML_VALUE)
                 .pathParam("id", equipamentoDTO.getId())
                 .when()
                 .get("{id}")
                 .then()
                 .statusCode(200)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
                 .extract()
                 .body()
                 .asString();
@@ -123,39 +128,11 @@ public class EquipamentoControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(criadoEquipamento.getId());
         assertTrue(criadoEquipamento.getId() > 0);
 
-        assertEquals("Teste 2", criadoEquipamento.getNome());
+        assertEquals("Teste2027", criadoEquipamento.getNome());
+
     }
 
-    /*
-    @Test
-    @Order(4)
-    void disableTest() throws JsonProcessingException {
 
-        var content = given(specification)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("id", equipamentoDTO.getId())
-                .when()
-                .patch("{id}")
-                .then()
-                .statusCode(200)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .extract()
-                .body()
-                .asString();
-
-        PersonDTO createdPerson = objectMapper.readValue(content, PersonDTO.class);
-        person = createdPerson;
-
-        assertNotNull(createdPerson.getId());
-        assertTrue(createdPerson.getId() > 0);
-
-        assertEquals("Linus", createdPerson.getFirstName());
-        assertEquals("Benedict Torvalds", createdPerson.getLastName());
-        assertEquals("Helsinki - Finland", createdPerson.getAddress());
-        assertEquals("Male", createdPerson.getGender());
-        assertFalse(createdPerson.getEnabled());
-    }
-    */
 
 
 
@@ -165,64 +142,73 @@ public class EquipamentoControllerJsonTest extends AbstractIntegrationTest {
     void findAllTest() throws JsonProcessingException {
 
         var content = given(specification)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_XML_VALUE)
                 .queryParams("page", 0, "size", 12, "direction", "asc")
                 .when()
                 .get()
                 .then()
                 .statusCode(200)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
                 .extract()
                 .body()
                 .asString();
 
-        WrapperEquipamentoDTO wrapper = objectMapper.readValue(content, WrapperEquipamentoDTO.class);
-        List<EquipamentoDTO> equipamentos = wrapper.getEmbedded().getEquipamentos();
+        PagedModelEquipamento wrapper = objectMapper.readValue(content, PagedModelEquipamento.class);
+        List<EquipamentoDTO> equipamentos = wrapper.getContent();
 
         EquipamentoDTO equipamento1 = equipamentos.get(0);
+
         assertNotNull(equipamento1.getId());
         assertTrue(equipamento1.getId() > 0);
+
         assertEquals("Joao", equipamento1.getNome());
 
-
         EquipamentoDTO equipamento2 = equipamentos.get(1);
+
         assertNotNull(equipamento2.getId());
         assertTrue(equipamento2.getId() > 0);
+
         assertEquals("Jose", equipamento2.getNome());
+
     }
 
     @Test
     @Order(5)
-    void findByNameTest() throws JsonProcessingException {
-
+    void findByNameTestTest() throws JsonProcessingException {
 
         var content = given(specification)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_XML_VALUE)
                 .pathParam("nome", "Jo")
                 .queryParams("page", 0, "size", 12, "direction", "asc")
                 .when()
                 .get("buscarPorNome/{nome}")
                 .then()
                 .statusCode(200)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_XML_VALUE)
                 .extract()
                 .body()
                 .asString();
 
-        WrapperEquipamentoDTO wrapper = objectMapper.readValue(content, WrapperEquipamentoDTO.class);
-        List<EquipamentoDTO> equipamentos = wrapper.getEmbedded().getEquipamentos();
+        PagedModelEquipamento wrapper = objectMapper.readValue(content, PagedModelEquipamento.class);
+        List<EquipamentoDTO> equipamentos = wrapper.getContent();
 
         EquipamentoDTO equipamento1 = equipamentos.get(0);
+
         assertNotNull(equipamento1.getId());
         assertTrue(equipamento1.getId() > 0);
+
         assertEquals("Joao", equipamento1.getNome());
 
 
         EquipamentoDTO equipamento2 = equipamentos.get(1);
+
         assertNotNull(equipamento2.getId());
         assertTrue(equipamento2.getId() > 0);
+
         assertEquals("Jose", equipamento2.getNome());
+
     }
+
 
     @Test
     @Order(6)
@@ -238,7 +224,9 @@ public class EquipamentoControllerJsonTest extends AbstractIntegrationTest {
 
     private void mockEquipamento() {
         equipamentoDTO.setNome("Teste2025");
+
     }
+
 
 
 

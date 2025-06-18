@@ -1,7 +1,7 @@
-package api.file.exporter.impl.equipamento;
+package api.file.exporter.impl.material;
 
-import api.dto.response.EquipamentoResponseDTO;
-import api.file.exporter.contract.EquipamentoExporter;
+import api.dto.response.MaterialResponseDTO;
+import api.file.exporter.contract.MaterialExporter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.core.io.ByteArrayResource;
@@ -14,10 +14,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
-public class CsvExporter implements EquipamentoExporter {
+public class CsvExporter implements MaterialExporter {
 
     @Override
-    public Resource exportEquipamentos(List<EquipamentoResponseDTO> equipamentos) throws Exception {
+    public Resource exportMateriais(List<MaterialResponseDTO> materiais) throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
 
@@ -27,10 +27,10 @@ public class CsvExporter implements EquipamentoExporter {
                 .build();
 
         try (CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat)) {
-            for (EquipamentoResponseDTO equipamento : equipamentos) {
+            for (MaterialResponseDTO material : materiais) {
                 csvPrinter.printRecord(
-                        equipamento.getId(),
-                        equipamento.getNome()
+                        material.getId(),
+                        material.getNome()
                 );
             }
 
@@ -39,7 +39,7 @@ public class CsvExporter implements EquipamentoExporter {
     }
 
     @Override
-    public Resource exportEquipamento(EquipamentoResponseDTO equipamento) throws Exception {
+    public Resource exportMaterial(MaterialResponseDTO equipamento) throws Exception {
         return null;
     }
 }

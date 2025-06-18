@@ -8,9 +8,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Entity
+
 @Table(name = "tb_material")
-public class Material extends Auditable implements Serializable {
+@Entity
+public class Material  implements Serializable {
+
 
     private static final long serialVersionUID = 1L;
 
@@ -37,7 +39,7 @@ public class Material extends Auditable implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "situacao", nullable = false)
-    private Situacao situacao = Situacao.DISPONÍVEL;
+    private Material.Situacao situacao = Material.Situacao.DISPONÍVEL;
 
     @Column(name = "patrimonio", unique = true, length = 4)
     private String patrimonio;
@@ -70,7 +72,7 @@ public class Material extends Auditable implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_depreciacao", nullable = false)
-    private TipoDepreciacao tipoDepreciacao = TipoDepreciacao.LINEAR;
+    private Material.TipoDepreciacao tipoDepreciacao = Material.TipoDepreciacao.LINEAR;
 
     @Column(name = "percentual_depreciacao", precision = 5, scale = 2)
     private BigDecimal percentualDepreciacao;
@@ -106,11 +108,11 @@ public class Material extends Auditable implements Serializable {
         this.nome = nome;
     }
 
-    public Situacao getSituacao() {
+    public Material.Situacao getSituacao() {
         return situacao;
     }
 
-    public void setSituacao(Situacao situacao) {
+    public void setSituacao(Material.Situacao situacao) {
         this.situacao = situacao;
     }
 
@@ -186,11 +188,11 @@ public class Material extends Auditable implements Serializable {
         this.qrValor = qrValor;
     }
 
-    public TipoDepreciacao getTipoDepreciacao() {
+    public Material.TipoDepreciacao getTipoDepreciacao() {
         return tipoDepreciacao;
     }
 
-    public void setTipoDepreciacao(TipoDepreciacao tipoDepreciacao) {
+    public void setTipoDepreciacao(Material.TipoDepreciacao tipoDepreciacao) {
         this.tipoDepreciacao = tipoDepreciacao;
     }
 
@@ -252,4 +254,7 @@ public class Material extends Auditable implements Serializable {
                 ", valorAtual=" + valorAtual +
                 '}';
     }
+
+
+
 }

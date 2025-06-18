@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "server.port=8888" })
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class EquipamentoControllerYamlTest extends AbstractIntegrationTest {
+public class MaterialControllerYamlTest extends AbstractIntegrationTest {
 
     private static RequestSpecification specification;
     private static YAMLMapper objectMapper;

@@ -1,7 +1,7 @@
-package api.file.exporter.impl.equipamento;
+package api.file.exporter.impl.material;
 
-import api.dto.response.EquipamentoResponseDTO;
-import api.file.exporter.contract.EquipamentoExporter;
+import api.dto.response.MaterialResponseDTO;
+import api.file.exporter.contract.MaterialExporter;
 import api.services.utils.QRCodeService;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -18,16 +18,16 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class PdfExporter implements EquipamentoExporter {
+public class PdfExporter implements MaterialExporter {
 
     @Autowired
     private QRCodeService service;
 
     @Override
-    public Resource exportEquipamentos(List<EquipamentoResponseDTO> equipamentos) throws Exception {
-        InputStream inputStream = getClass().getResourceAsStream("/templates/equipamentos.jrxml");
+    public Resource exportMateriais(List<MaterialResponseDTO> equipamentos) throws Exception {
+        InputStream inputStream = getClass().getResourceAsStream("/templates/materiais.jrxml");
         if (inputStream == null) {
-            throw new RuntimeException("Template file not found: /templates/equipamentos.jrxml");
+            throw new RuntimeException("Template file not found: /templates/materiais.jrxml");
         }
 
         JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
@@ -45,11 +45,11 @@ public class PdfExporter implements EquipamentoExporter {
 
 
     @Override
-    public Resource exportEquipamento(EquipamentoResponseDTO equipamentoResponseDTO) throws Exception {
+    public Resource exportMaterial(MaterialResponseDTO materialResponseDTO) throws Exception {
 
-        InputStream mainTemplateStream = getClass().getResourceAsStream("/templates/equipamentos.jrxml");
+        InputStream mainTemplateStream = getClass().getResourceAsStream("/templates/materiais.jrxml");
         if (mainTemplateStream == null) {
-            throw new RuntimeException("Template file not found: /templates/equipamentos.jrxml");
+            throw new RuntimeException("Template file not found: /templates/materiais.jrxml");
         }
 
         /*InputStream subReportStream = getClass().getResourceAsStream("/templates/books.jrxml");
@@ -60,7 +60,7 @@ public class PdfExporter implements EquipamentoExporter {
         JasperReport mainReport = JasperCompileManager.compileReport(mainTemplateStream);
         //JasperReport subReport = JasperCompileManager.compileReport(subReportStream);
 
-        InputStream qrCodeStream = service.generateQRCode(equipamentoResponseDTO.getQrcodeValor(), 200, 200);
+        InputStream qrCodeStream = service.generateQRCode(materialResponseDTO.getQrCodeValor(), 200, 200);
 
         //JRBeanCollectionDataSource subReportDataSource = new JRBeanCollectionDataSource(person.getBooks());
 
@@ -72,7 +72,7 @@ public class PdfExporter implements EquipamentoExporter {
         //parameters.put("SUB_REPORT_DIR", path);
         parameters.put("QRCODE_IMAGEM", qrCodeStream);
 
-        JRBeanCollectionDataSource mainDataSource = new JRBeanCollectionDataSource(Collections.singletonList(equipamentoResponseDTO));
+        JRBeanCollectionDataSource mainDataSource = new JRBeanCollectionDataSource(Collections.singletonList(materialResponseDTO));
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(mainReport, parameters, mainDataSource);
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {

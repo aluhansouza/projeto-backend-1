@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "tb_setor")
-public class Setor extends Auditable implements Serializable {
+public class Setor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

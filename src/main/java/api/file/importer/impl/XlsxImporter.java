@@ -1,7 +1,7 @@
 package api.file.importer.impl;
 
-import api.dto.request.EquipamentoRequestDTO;
-import api.file.importer.contract.FileImporter;
+import api.dto.request.MaterialRequestDTO;
+import api.file.importer.contract.MaterialImporter;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -14,10 +14,10 @@ import java.util.Iterator;
 import java.util.List;
 
 @Component
-public class XlsxImporter implements FileImporter {
+public class XlsxImporter implements MaterialImporter {
 
     @Override
-    public List<EquipamentoRequestDTO> importFile(InputStream inputStream) throws Exception {
+    public List<MaterialRequestDTO> importFile(InputStream inputStream) throws Exception {
 
         try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
             XSSFSheet sheet = workbook.getSheetAt(0);
@@ -25,30 +25,30 @@ public class XlsxImporter implements FileImporter {
 
             if (rowIterator.hasNext()) rowIterator.next();
 
-            return parseRowsToEquipamentoDtoList(rowIterator);
+            return parseRowsToMaterialDtoList(rowIterator);
 
         }
     }
 
-    private List<EquipamentoRequestDTO> parseRowsToEquipamentoDtoList(Iterator<Row> rowIterator) {
-        List<EquipamentoRequestDTO> equipamentos = new ArrayList<>();
+    private List<MaterialRequestDTO> parseRowsToMaterialDtoList(Iterator<Row> rowIterator) {
+        List<MaterialRequestDTO> materiais = new ArrayList<>();
 
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             if (isRowValid(row)) {
-                equipamentos.add(parseRowToEquipamentoDto(row));
+                materiais.add(parseRowToMaterialDto(row));
             }
         }
-        return equipamentos;
+        return materiais;
     }
 
 
 
     // Determinar a coluna, por exemplo Coluna 0 = ID, Coluna 1 = Nome
-    private EquipamentoRequestDTO parseRowToEquipamentoDto(Row row) {
-        EquipamentoRequestDTO equipamentoRequestDTO = new EquipamentoRequestDTO();
-        equipamentoRequestDTO.setNome(row.getCell(1).getStringCellValue());
-        return equipamentoRequestDTO;
+    private MaterialRequestDTO parseRowToMaterialDto(Row row) {
+        MaterialRequestDTO materialRequestDTO = new MaterialRequestDTO();
+        materialRequestDTO.setNome(row.getCell(1).getStringCellValue());
+        return materialRequestDTO;
     }
 
 
