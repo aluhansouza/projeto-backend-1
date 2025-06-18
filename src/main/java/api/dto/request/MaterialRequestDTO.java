@@ -35,6 +35,9 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
     @NotNull(message = "ID do setor não pode ser nulo")
     private Long setorId;
 
+    @NotNull(message = "ID da origem não pode ser nulo")
+    private Long origemId;
+
     @Size(max = 50, message = "Localização física deve ter no máximo 50 caracteres")
     private String localizacaoFisica;
 
@@ -52,7 +55,7 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
     private String identificacaoRecibo;
 
     @Size(max = 255, message = "QR valor deve ter no máximo 255 caracteres")
-    private String qrCodeValor;
+    private String qrValor;
 
     @NotNull(message = "Tipo de depreciação não pode ser nulo")
     private TipoDepreciacao tipoDepreciacao;
@@ -88,7 +91,8 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
         this.descricao = descricao;
         this.valorCompra = valorCompra;
         this.identificacaoRecibo = identificacaoRecibo;
-        this.qrCodeValor = qrCodeValor;
+        this.qrValor = qrValor;
+        this.origemId = origemId;
         this.tipoDepreciacao = tipoDepreciacao;
         this.percentualDepreciacao = percentualDepreciacao;
         this.vidaUtilAnos = vidaUtilAnos;
@@ -144,6 +148,14 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
         this.setorId = setorId;
     }
 
+    public Long getOrigemId() {
+        return origemId;
+    }
+
+    public void setOrigemId(Long origemId) {
+        this.origemId = origemId;
+    }
+
     public String getLocalizacaoFisica() {
         return localizacaoFisica;
     }
@@ -184,12 +196,12 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
         this.identificacaoRecibo = identificacaoRecibo;
     }
 
-    public String getqrCodeValor() {
-        return qrCodeValor;
+    public String getQrValor() {
+        return qrValor;
     }
 
-    public void setQrCodeValor(String qrCodeValor) {
-        this.qrCodeValor = qrCodeValor;
+    public void setQrValor(String qrCodeValor) {
+        this.qrValor = qrValor;
     }
 
     public TipoDepreciacao getTipoDepreciacao() {
@@ -241,7 +253,7 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
                 Objects.equals(descricao, that.descricao) &&
                 Objects.equals(valorCompra, that.valorCompra) &&
                 Objects.equals(identificacaoRecibo, that.identificacaoRecibo) &&
-                Objects.equals(qrCodeValor, that.qrCodeValor) &&
+                Objects.equals(qrValor, that.qrValor) &&
                 tipoDepreciacao == that.tipoDepreciacao &&
                 Objects.equals(percentualDepreciacao, that.percentualDepreciacao) &&
                 Objects.equals(vidaUtilAnos, that.vidaUtilAnos) &&
@@ -250,7 +262,7 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, categoriaId, setorId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrCodeValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
+        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, categoriaId, setorId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
     }
 
     @Override
@@ -267,7 +279,7 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
                 ", descricao='" + descricao + '\'' +
                 ", valorCompra=" + valorCompra +
                 ", identificacaoRecibo='" + identificacaoRecibo + '\'' +
-                ", qrValor='" + qrCodeValor + '\'' +
+                ", qrValor='" + qrValor + '\'' +
                 ", tipoDepreciacao=" + tipoDepreciacao +
                 ", percentualDepreciacao=" + percentualDepreciacao +
                 ", vidaUtilAnos=" + vidaUtilAnos +

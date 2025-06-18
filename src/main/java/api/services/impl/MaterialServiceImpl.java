@@ -5,6 +5,7 @@ import api.dto.request.MaterialRequestDTO;
 import api.dto.response.MaterialResponseDTO;
 import api.entity.Categoria;
 import api.entity.Material;
+import api.entity.Origem;
 import api.entity.Setor;
 import api.exceptions.BadRequestException;
 import api.exceptions.FileStorageException;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
@@ -58,21 +60,49 @@ public class MaterialServiceImpl implements MaterialService {
     @Autowired
     PagedResourcesAssembler<MaterialResponseDTO> assembler;
 
-    @Override
+    //@Override
     @Transactional(readOnly = true)
     public PagedModel<EntityModel<MaterialResponseDTO>> listar(Pageable pageable) {
 
-        logger.info("Finding all Equipamentos!");
+        logger.info("Finding all Materiais!");
 
-        var equipamentos = materialRepository.findAll(pageable);
-        return buildPagedModel(pageable, equipamentos);
+        var materiais = materialRepository.findAll(pageable);
+
+        List<MaterialResponseDTO> dtos = materiais.getContent().stream()
+                .map(material ->{MaterialResponseDTO dto = new MaterialResponseDTO();
+
+                    dto.setId(material.getId());
+                    dto.setNome(material.getNome());
+
+                    if(material.getCategoria() != null) {
+                        dto.setCategoriaId(material.getCategoria().getId());
+                        System.out.println("ID da Categoria: "+ dto.getCategoriaId());
+                    }
+
+                    if(material.getSetor() != null) {
+                        dto.setSetorId(material.getSetor().getId());
+                        System.out.println("ID do Setor: "+ dto.getSetorId());
+                    }
+
+                    if(material.getOrigem() != null) {
+                        dto.setOrigemId(material.getOrigem().getId());
+                        System.out.println("ID da Origem: "+ dto.getOrigemId());
+                    }
+
+                    return dto;}).toList();
+
+        return buildPagedModel(pageable, materiais);
+        //return buildPagedModel(pageable, new PageImpl<>(dtos, pageable, materiais.getTotalElements()));
     }
+
 
     @Override
     @Transactional(readOnly = true)
     public PagedModel<EntityModel<MaterialResponseDTO>> buscarPorNome(String nome, Pageable pageable) {
 
-        logger.info("Finding Equipamento by name!");
+        logger.info("Finding Material by name!");
+
+
 
         var people = materialRepository.buscarPorNome(nome, pageable);
         return buildPagedModel(pageable, people);
@@ -102,34 +132,49 @@ public class MaterialServiceImpl implements MaterialService {
 
         var entity = parseObject(materialRequestDTO, Material.class);
 
-        // Associando Categoria
-        if (materialRequestDTO.getCategoriaId() != null) {
-            Categoria categoria = new Categoria();
-            categoria.setId(materialRequestDTO.getCategoriaId());
-            entity.setCategoria(categoria);
-        }
-
         // Associando Setor
         if (materialRequestDTO.getSetorId() != null) {
             Setor setor = new Setor();
             setor.setId(materialRequestDTO.getSetorId());
+            System.out.println("ID do Setor: "+ materialRequestDTO.getSetorId());
             entity.setSetor(setor);
         }
 
+        // Associando Categoria
+        if (materialRequestDTO.getCategoriaId() != null) {
+            Categoria categoria = new Categoria();
+            categoria.setId(materialRequestDTO.getCategoriaId());
+            System.out.println("ID da Categoria: "+ materialRequestDTO.getCategoriaId());
+            entity.setCategoria(categoria);
+        }
+
+        // Associando Origem
+        if (materialRequestDTO.getOrigemId() != null) {
+            Origem origem = new Origem();
+            origem.setId(materialRequestDTO.getOrigemId());
+            System.out.println("ID da Origem: "+ materialRequestDTO.getOrigemId());
+            entity.setOrigem(origem);
+        }
 
         var materialSalvo = materialRepository.save(entity);
 
+        System.out.println("QRCODEVALOR: "+materialRequestDTO.getQrValor());
 
-        var dto = parseObject(materialSalvo, MaterialResponseDTO.class);
+        var entidade = materialRepository.findById(materialSalvo.getId()).orElseThrow();
+
 
         String url = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path("/api/materiais/{id}")
                 .buildAndExpand(materialSalvo.getId())
                 .toUriString();
-        dto.setQrCodeValor(url);
+        entidade.setQrValor(url);
+        entidade = materialRepository.save(entity);
+        var dto = parseObject(entidade, MaterialResponseDTO.class);
 
-        logger.debug("Material persistido com ID={} e qrcodevalor={}", dto.getId(), dto.getQrCodeValor());
+        System.out.println("QRCODEVALOR: "+materialRequestDTO.getQrValor());
+
+        logger.debug("Material persistido com ID={} e qrcodevalor={}", dto.getId(), dto.getQrValor());
 
         addHateoasLinks(dto);
 
@@ -147,7 +192,52 @@ public class MaterialServiceImpl implements MaterialService {
         Material material = materialRepository.findById(materialRequestDTO.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
 
+        // Associando Setor
+        if (materialRequestDTO.getSetorId() != null) {
+            Setor setor = new Setor();
+            setor.setId(materialRequestDTO.getSetorId());
+            System.out.println("ID do Setor: "+ materialRequestDTO.getSetorId());
+            material.setSetor(setor);
+        }
+
+        // Associando Categoria
+        if (materialRequestDTO.getCategoriaId() != null) {
+            Categoria categoria = new Categoria();
+            categoria.setId(materialRequestDTO.getCategoriaId());
+            System.out.println("ID da Categoria: "+ materialRequestDTO.getCategoriaId());
+            material.setCategoria(categoria);
+        }
+
+        // Associando Origem
+        if (materialRequestDTO.getOrigemId() != null) {
+            Origem origem = new Origem();
+            origem.setId(materialRequestDTO.getOrigemId());
+            System.out.println("ID da Origem: "+ materialRequestDTO.getOrigemId());
+            material.setOrigem(origem);
+        }
+
+
         material.setNome(materialRequestDTO.getNome());
+
+        Material.Situacao enumSituacao = Material.Situacao.valueOf(materialRequestDTO.getSituacao().name());
+        material.setSituacao(enumSituacao);
+
+        material.setPatrimonio(materialRequestDTO.getPatrimonio());
+        material.setLocalizacaoFisica(materialRequestDTO.getLocalizacaoFisica());
+        material.setDataAquisicao(materialRequestDTO.getDataAquisicao());
+        material.setDescricao(materialRequestDTO.getDescricao());
+        material.setValorCompra(materialRequestDTO.getValorCompra());
+        material.setIdentificacaoRecibo(materialRequestDTO.getIdentificacaoRecibo());
+
+        Material.TipoDepreciacao enumTipoDepreciacao = Material.TipoDepreciacao.valueOf(materialRequestDTO.getTipoDepreciacao().name());
+        material.setTipoDepreciacao(enumTipoDepreciacao);
+
+        material.setPercentualDepreciacao(materialRequestDTO.getPercentualDepreciacao());
+        material.setVidaUtilAnos(materialRequestDTO.getVidaUtilAnos());
+        material.setValorAtual(materialRequestDTO.getValorAtual());
+
+        //material.setTipoDepreciacao(Material.TipoDepreciacao.LINEAR);
+        //material.setSituacao(Material.Situacao.EMPRESTADO);
 
         var dto = parseObject(materialRepository.save(material), MaterialResponseDTO.class);
         addHateoasLinks(dto);
@@ -233,6 +323,9 @@ public class MaterialServiceImpl implements MaterialService {
 
         var materiaisWithLinks = materiais.map(material -> {
             var dto = parseObject(material, MaterialResponseDTO.class);
+            dto.setCategoriaId(material.getCategoria() != null ? material.getCategoria().getId() : null);
+            dto.setSetorId(material.getSetor() != null ? material.getSetor().getId() : null);
+            dto.setOrigemId(material.getOrigem() != null ? material.getOrigem().getId() : null);
             addHateoasLinks(dto);
             return dto;
         });

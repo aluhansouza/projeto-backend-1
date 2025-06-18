@@ -60,7 +60,7 @@ public class PdfExporter implements MaterialExporter {
         JasperReport mainReport = JasperCompileManager.compileReport(mainTemplateStream);
         //JasperReport subReport = JasperCompileManager.compileReport(subReportStream);
 
-        InputStream qrCodeStream = service.generateQRCode(materialResponseDTO.getQrCodeValor(), 200, 200);
+        InputStream qrCodeStream = service.generateQRCode(materialResponseDTO.getQrValor(), 200, 200);
 
         //JRBeanCollectionDataSource subReportDataSource = new JRBeanCollectionDataSource(person.getBooks());
 

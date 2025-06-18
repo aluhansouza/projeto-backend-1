@@ -1,6 +1,5 @@
 package api.entity;
 
-import api.entity.audit.Auditable;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -20,8 +19,8 @@ public class Material  implements Serializable {
         DISPONÍVEL,
         EMPRESTADO,
         DANIFICADO,
-        DESCARTADO,
-        EM_MANUTENCAO
+        DESATIVADO,
+        MANUTENÇÃO
     }
 
     public enum TipoDepreciacao {
@@ -39,7 +38,7 @@ public class Material  implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "situacao", nullable = false)
-    private Material.Situacao situacao = Material.Situacao.DISPONÍVEL;
+    private Material.Situacao situacao = Situacao.DISPONÍVEL;
 
     @Column(name = "patrimonio", unique = true, length = 4)
     private String patrimonio;
@@ -51,6 +50,10 @@ public class Material  implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "setor_id")
     private Setor setor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "origem_id")
+    private Origem origem;
 
     @Column(name = "localizacao_fisica", length = 50)
     private String localizacaoFisica;
@@ -87,10 +90,6 @@ public class Material  implements Serializable {
     public Material() {}
 
     // Getters e Setters
-    // (Pode usar geração automática de getters/setters com Lombok, se preferir)
-
-    // equals, hashCode e toString
-
 
     public Long getId() {
         return id;
@@ -138,6 +137,14 @@ public class Material  implements Serializable {
 
     public void setSetor(Setor setor) {
         this.setor = setor;
+    }
+
+    public Origem getOrigem() {
+        return origem;
+    }
+
+    public void setOrigem(Origem origem) {
+        this.origem = origem;
     }
 
     public String getLocalizacaoFisica() {
@@ -242,6 +249,7 @@ public class Material  implements Serializable {
                 ", patrimonio='" + patrimonio + '\'' +
                 ", categoria=" + (categoria != null ? categoria.getId() : null) +
                 ", setor=" + (setor != null ? setor.getId() : null) +
+                ", origem=" + (origem != null ? origem.getId() : null) +
                 ", localizacaoFisica='" + localizacaoFisica + '\'' +
                 ", dataAquisicao=" + dataAquisicao +
                 ", descricao='" + descricao + '\'' +

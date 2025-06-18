@@ -27,6 +27,8 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
 
     private Long setorId;
 
+    private Long origemId;
+
     private String localizacaoFisica;
 
     private LocalDate dataAquisicao;
@@ -37,7 +39,7 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
 
     private String identificacaoRecibo;
 
-    private String qrCodeValor;
+    private String qrValor;
 
     private TipoDepreciacao tipoDepreciacao;
 
@@ -65,14 +67,13 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
         this.descricao = descricao;
         this.valorCompra = valorCompra;
         this.identificacaoRecibo = identificacaoRecibo;
-        this.qrCodeValor = qrCodeValor;
+        this.qrValor = qrValor;
         this.tipoDepreciacao = tipoDepreciacao;
         this.percentualDepreciacao = percentualDepreciacao;
         this.vidaUtilAnos = vidaUtilAnos;
         this.valorAtual = valorAtual;
     }
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -121,6 +122,14 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
         this.setorId = setorId;
     }
 
+    public Long getOrigemId() {
+        return origemId;
+    }
+
+    public void setOrigemId(Long origemId) {
+        this.origemId = origemId;
+    }
+
     public String getLocalizacaoFisica() {
         return localizacaoFisica;
     }
@@ -161,12 +170,12 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
         this.identificacaoRecibo = identificacaoRecibo;
     }
 
-    public String getQrCodeValor() {
-        return qrCodeValor;
+    public String getQrValor() {
+        return qrValor;
     }
 
-    public void setQrCodeValor(String qrCodeValor) {
-        this.qrCodeValor = qrCodeValor;
+    public void setQrValor(String qrValor) {
+        this.qrValor = qrValor;
     }
 
     public TipoDepreciacao getTipoDepreciacao() {
@@ -218,7 +227,7 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
                 Objects.equals(descricao, that.descricao) &&
                 Objects.equals(valorCompra, that.valorCompra) &&
                 Objects.equals(identificacaoRecibo, that.identificacaoRecibo) &&
-                Objects.equals(qrCodeValor, that.qrCodeValor) &&
+                Objects.equals(qrValor, that.qrValor) &&
                 tipoDepreciacao == that.tipoDepreciacao &&
                 Objects.equals(percentualDepreciacao, that.percentualDepreciacao) &&
                 Objects.equals(vidaUtilAnos, that.vidaUtilAnos) &&
@@ -227,7 +236,7 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, categoriaId, setorId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrCodeValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
+        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, categoriaId, setorId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
     }
 
     @Override
@@ -244,7 +253,7 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
                 ", descricao='" + descricao + '\'' +
                 ", valorCompra=" + valorCompra +
                 ", identificacaoRecibo='" + identificacaoRecibo + '\'' +
-                ", qrCodeValor='" + qrCodeValor + '\'' +
+                ", qrValor='" + qrValor + '\'' +
                 ", tipoDepreciacao=" + tipoDepreciacao +
                 ", percentualDepreciacao=" + percentualDepreciacao +
                 ", vidaUtilAnos=" + vidaUtilAnos +
