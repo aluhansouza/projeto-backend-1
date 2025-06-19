@@ -110,7 +110,7 @@ public interface MaterialControllerDocs {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    MaterialResponseDTO cadastrar(@RequestBody MaterialRequestDTO materialRequestDTO);
+    MaterialResponseDTO cadastrar(@RequestBody MaterialRequestDTO materialRequestDTO, MultipartFile file);
 
     @Operation(summary = "Método Atualizar",
             description = "Método Atualizar",

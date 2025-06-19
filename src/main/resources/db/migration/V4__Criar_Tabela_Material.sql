@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `tb_material` (
 	`valor_compra` DECIMAL(10,2),
 	`identificacao_recibo` VARCHAR(30),
 	`qr_valor` VARCHAR(255),
-
+    `imagem_url` VARCHAR(255),
 	`tipo_depreciacao` ENUM('LINEAR', 'ACELERADA') DEFAULT 'LINEAR',
 	`percentual_depreciacao` DECIMAL(5,2),
 	`vida_util_anos` INT,

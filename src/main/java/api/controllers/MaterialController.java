@@ -7,6 +7,7 @@ import api.file.exporter.MediaTypes;
 import api.services.interfaces.MaterialService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
@@ -82,18 +83,16 @@ public class MaterialController implements MaterialControllerDocs {
 
 
     @PostMapping(
-            consumes = {
-                    MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.APPLICATION_XML_VALUE,
-                    MediaType.APPLICATION_YAML_VALUE},
+            
             produces = {
                     MediaType.APPLICATION_JSON_VALUE,
                     MediaType.APPLICATION_XML_VALUE,
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public MaterialResponseDTO cadastrar(@RequestBody MaterialRequestDTO materialRequestDTO) {
-        return materialService.cadastrar(materialRequestDTO);
+    public MaterialResponseDTO cadastrar(@RequestPart("material") @Valid MaterialRequestDTO materialRequestDTO,
+                                           @RequestPart(value = "file", required = false) MultipartFile file) {
+        return materialService.cadastrar(materialRequestDTO, file);
     }
 
     @PutMapping(

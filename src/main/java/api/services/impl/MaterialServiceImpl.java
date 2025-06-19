@@ -15,6 +15,7 @@ import api.file.importer.factory.FileImporterFactory;
 import api.mapstruct.MaterialMapper;
 import api.repository.MaterialRepository;
 import api.services.interfaces.MaterialService;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -132,42 +136,53 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     @Transactional
-    public MaterialResponseDTO cadastrar(MaterialRequestDTO dtoRequest) {
-        // … validações e log omitidos
-        if (dtoRequest == null) {
-            logger.error("MaterialRequestDTO está nulo ao tentar cadastrar material");
-            throw new RequiredObjectIsNullException();
-        }
-        if (dtoRequest.getId() != null) {
-            logger.error("ID do DTO deve ser nulo em operação de criação (recebido id={})", dtoRequest.getId());
-            throw new BadRequestException("Não informe ID ao criar um novo material");
-        }
+    public MaterialResponseDTO cadastrar(MaterialRequestDTO dtoRequest, MultipartFile file) {
+        // 1. validações (como antes)
+        if (dtoRequest == null) throw new RequiredObjectIsNullException();
+        logger.info("Criando novo Material: nome='{}'", dtoRequest.getNome());
 
-        // 1. Converte e salva pela primeira vez, obtendo o ID gerado
+        // 2. salva a entidade para obter o ID
         Material entity = materialMapper.toEntity(dtoRequest);
-        Material saved = materialRepository.save(entity);  // ← aqui o saved.getId() já está preenchido
+        Material saved = materialRepository.save(entity);
 
-        // 2. Monta a URL usando o ID recém-gerado
-        String qrUrl = ServletUriComponentsBuilder
-                // baseia-se no contexto atual (ex.: http://localhost:8080)
-                .fromCurrentContextPath()
-                // acrescenta o path, com placeholder para o {id}
+        // 3. se vier arquivo, armazena e seta imageUrl
+        if (file != null && !file.isEmpty()) {
+            try {
+                // reutiliza a lógica de upload já criada
+                String uploadDir = "uploads/materials";
+                Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+                if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+
+                String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+                String filename = saved.getId() + "_" + System.currentTimeMillis() + "." + ext;
+                Path target = uploadPath.resolve(filename);
+                file.transferTo(target.toFile());
+
+                String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path("/uploads/materials/")
+                        .path(filename)
+                        .toUriString();
+
+                saved.setImagemUrl(fileUrl);
+                saved = materialRepository.save(saved);
+
+            } catch (IOException e) {
+                logger.error("Falha no upload de imagem para material id={}", saved.getId(), e);
+                throw new FileStorageException("Erro ao armazenar imagem", e);
+            }
+        }
+
+        // 4. gera QR code como antes
+        String qrUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/v1/materiais/{id}")
-                // substitui {id} pelo valor real
                 .buildAndExpand(saved.getId())
-                // converte para String: "http://localhost:8080/api/v1/materiais/123"
                 .toUriString();
-
-        // 3. Atualiza o campo qrValor e salva novamente
         saved.setQrValor(qrUrl);
         saved = materialRepository.save(saved);
 
-        logger.debug("Material criado com ID={} e qrValor={}", saved.getId(), qrUrl);
-
-        // 4. Converte para DTO e adiciona HATEOAS
+        // 5. retorna DTO com links
         MaterialResponseDTO response = materialMapper.toResponse(saved);
         addHateoasLinks(response);
-
         return response;
     }
 
@@ -372,7 +387,7 @@ public class MaterialServiceImpl implements MaterialService {
 
         // 4. Create
         dto.add(linkTo(methodOn(MaterialController.class)
-                .cadastrar(null))
+                .cadastrar(null,null))
                 .withRel("cadastrar")
                 .withType("POST"));
 

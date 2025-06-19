@@ -2,6 +2,7 @@ package api.dto.response;
 
 import api.entity.Material.Situacao;
 import api.entity.Material.TipoDepreciacao;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -22,6 +23,8 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
     private Situacao situacao;
 
     private String patrimonio;
+
+    private String imagemUrl;
 
     private Long categoriaId;
 
@@ -52,16 +55,59 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
     // Construtores
     public MaterialResponseDTO() {}
 
-    public MaterialResponseDTO(Long id, String nome, Situacao situacao, String patrimonio, Long categoriaId, Long setorId,
-                               String localizacaoFisica, LocalDate dataAquisicao, String descricao, BigDecimal valorCompra,
-                               String identificacaoRecibo, String qrValor, TipoDepreciacao tipoDepreciacao,
-                               BigDecimal percentualDepreciacao, Integer vidaUtilAnos, BigDecimal valorAtual) {
+    public MaterialResponseDTO(Long id, String nome, Situacao situacao, String patrimonio, String imagemUrl, Long categoriaId, Long setorId, Long origemId, String localizacaoFisica, LocalDate dataAquisicao, String descricao, BigDecimal valorCompra, String identificacaoRecibo, String qrValor, TipoDepreciacao tipoDepreciacao, BigDecimal percentualDepreciacao, Integer vidaUtilAnos, BigDecimal valorAtual) {
         this.id = id;
         this.nome = nome;
         this.situacao = situacao;
         this.patrimonio = patrimonio;
+        this.imagemUrl = imagemUrl;
         this.categoriaId = categoriaId;
         this.setorId = setorId;
+        this.origemId = origemId;
+        this.localizacaoFisica = localizacaoFisica;
+        this.dataAquisicao = dataAquisicao;
+        this.descricao = descricao;
+        this.valorCompra = valorCompra;
+        this.identificacaoRecibo = identificacaoRecibo;
+        this.qrValor = qrValor;
+        this.tipoDepreciacao = tipoDepreciacao;
+        this.percentualDepreciacao = percentualDepreciacao;
+        this.vidaUtilAnos = vidaUtilAnos;
+        this.valorAtual = valorAtual;
+    }
+
+    public MaterialResponseDTO(Link initialLink, Long id, String nome, Situacao situacao, String patrimonio, String imagemUrl, Long categoriaId, Long setorId, Long origemId, String localizacaoFisica, LocalDate dataAquisicao, String descricao, BigDecimal valorCompra, String identificacaoRecibo, String qrValor, TipoDepreciacao tipoDepreciacao, BigDecimal percentualDepreciacao, Integer vidaUtilAnos, BigDecimal valorAtual) {
+        super(initialLink);
+        this.id = id;
+        this.nome = nome;
+        this.situacao = situacao;
+        this.patrimonio = patrimonio;
+        this.imagemUrl = imagemUrl;
+        this.categoriaId = categoriaId;
+        this.setorId = setorId;
+        this.origemId = origemId;
+        this.localizacaoFisica = localizacaoFisica;
+        this.dataAquisicao = dataAquisicao;
+        this.descricao = descricao;
+        this.valorCompra = valorCompra;
+        this.identificacaoRecibo = identificacaoRecibo;
+        this.qrValor = qrValor;
+        this.tipoDepreciacao = tipoDepreciacao;
+        this.percentualDepreciacao = percentualDepreciacao;
+        this.vidaUtilAnos = vidaUtilAnos;
+        this.valorAtual = valorAtual;
+    }
+
+    public MaterialResponseDTO(Iterable<Link> initialLinks, Long id, String nome, Situacao situacao, String patrimonio, String imagemUrl, Long categoriaId, Long setorId, Long origemId, String localizacaoFisica, LocalDate dataAquisicao, String descricao, BigDecimal valorCompra, String identificacaoRecibo, String qrValor, TipoDepreciacao tipoDepreciacao, BigDecimal percentualDepreciacao, Integer vidaUtilAnos, BigDecimal valorAtual) {
+        super(initialLinks);
+        this.id = id;
+        this.nome = nome;
+        this.situacao = situacao;
+        this.patrimonio = patrimonio;
+        this.imagemUrl = imagemUrl;
+        this.categoriaId = categoriaId;
+        this.setorId = setorId;
+        this.origemId = origemId;
         this.localizacaoFisica = localizacaoFisica;
         this.dataAquisicao = dataAquisicao;
         this.descricao = descricao;
@@ -104,6 +150,14 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
 
     public void setPatrimonio(String patrimonio) {
         this.patrimonio = patrimonio;
+    }
+
+    public String getImagemUrl() {
+        return imagemUrl;
+    }
+
+    public void setImagemUrl(String imagemUrl) {
+        this.imagemUrl = imagemUrl;
     }
 
     public Long getCategoriaId() {
@@ -212,31 +266,15 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         MaterialResponseDTO that = (MaterialResponseDTO) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(nome, that.nome) &&
-                situacao == that.situacao &&
-                Objects.equals(patrimonio, that.patrimonio) &&
-                Objects.equals(categoriaId, that.categoriaId) &&
-                Objects.equals(setorId, that.setorId) &&
-                Objects.equals(localizacaoFisica, that.localizacaoFisica) &&
-                Objects.equals(dataAquisicao, that.dataAquisicao) &&
-                Objects.equals(descricao, that.descricao) &&
-                Objects.equals(valorCompra, that.valorCompra) &&
-                Objects.equals(identificacaoRecibo, that.identificacaoRecibo) &&
-                Objects.equals(qrValor, that.qrValor) &&
-                tipoDepreciacao == that.tipoDepreciacao &&
-                Objects.equals(percentualDepreciacao, that.percentualDepreciacao) &&
-                Objects.equals(vidaUtilAnos, that.vidaUtilAnos) &&
-                Objects.equals(valorAtual, that.valorAtual);
+        return Objects.equals(id, that.id) && Objects.equals(nome, that.nome) && situacao == that.situacao && Objects.equals(patrimonio, that.patrimonio) && Objects.equals(imagemUrl, that.imagemUrl) && Objects.equals(categoriaId, that.categoriaId) && Objects.equals(setorId, that.setorId) && Objects.equals(origemId, that.origemId) && Objects.equals(localizacaoFisica, that.localizacaoFisica) && Objects.equals(dataAquisicao, that.dataAquisicao) && Objects.equals(descricao, that.descricao) && Objects.equals(valorCompra, that.valorCompra) && Objects.equals(identificacaoRecibo, that.identificacaoRecibo) && Objects.equals(qrValor, that.qrValor) && tipoDepreciacao == that.tipoDepreciacao && Objects.equals(percentualDepreciacao, that.percentualDepreciacao) && Objects.equals(vidaUtilAnos, that.vidaUtilAnos) && Objects.equals(valorAtual, that.valorAtual);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, categoriaId, setorId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
+        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, imagemUrl, categoriaId, setorId, origemId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
     }
 
     @Override
@@ -246,8 +284,10 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
                 ", nome='" + nome + '\'' +
                 ", situacao=" + situacao +
                 ", patrimonio='" + patrimonio + '\'' +
+                ", imagemUrl='" + imagemUrl + '\'' +
                 ", categoriaId=" + categoriaId +
                 ", setorId=" + setorId +
+                ", origemId=" + origemId +
                 ", localizacaoFisica='" + localizacaoFisica + '\'' +
                 ", dataAquisicao=" + dataAquisicao +
                 ", descricao='" + descricao + '\'' +

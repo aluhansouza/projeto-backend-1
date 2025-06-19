@@ -20,7 +20,7 @@ public interface MaterialService {
 
     MaterialResponseDTO buscarPorId(Long id);
 
-    MaterialResponseDTO cadastrar(MaterialRequestDTO materialRequestDTO);
+    MaterialResponseDTO cadastrar(MaterialRequestDTO dtoRequest, MultipartFile file);
 
     MaterialResponseDTO atualizar(MaterialRequestDTO materialRequestDTO);
 

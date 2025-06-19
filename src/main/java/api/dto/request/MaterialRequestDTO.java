@@ -29,6 +29,8 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
     @Size(min = 1, max = 4, message = "Patrimônio deve ter entre 1 e 4 caracteres")
     private String patrimonio;
 
+    private String imagemUrl;
+
     @NotNull(message = "ID da categoria não pode ser nulo")
     private Long categoriaId;
 
@@ -76,28 +78,8 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
     // Construtores
     public MaterialRequestDTO() {}
 
-    public MaterialRequestDTO(Long id, String nome, Situacao situacao, String patrimonio, Long categoriaId, Long setorId,
-                              String localizacaoFisica, LocalDate dataAquisicao, String descricao, BigDecimal valorCompra,
-                              String identificacaoRecibo, String qrValor, TipoDepreciacao tipoDepreciacao,
-                              BigDecimal percentualDepreciacao, Integer vidaUtilAnos, BigDecimal valorAtual) {
-        this.id = id;
-        this.nome = nome;
-        this.situacao = situacao;
-        this.patrimonio = patrimonio;
-        this.categoriaId = categoriaId;
-        this.setorId = setorId;
-        this.localizacaoFisica = localizacaoFisica;
-        this.dataAquisicao = dataAquisicao;
-        this.descricao = descricao;
-        this.valorCompra = valorCompra;
-        this.identificacaoRecibo = identificacaoRecibo;
-        this.qrValor = qrValor;
-        this.origemId = origemId;
-        this.tipoDepreciacao = tipoDepreciacao;
-        this.percentualDepreciacao = percentualDepreciacao;
-        this.vidaUtilAnos = vidaUtilAnos;
-        this.valorAtual = valorAtual;
-    }
+
+
 
     // Getters e Setters
     public Long getId() {
@@ -130,6 +112,14 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
 
     public void setPatrimonio(String patrimonio) {
         this.patrimonio = patrimonio;
+    }
+
+    public String getImagemUrl() {
+        return imagemUrl;
+    }
+
+    public void setImagemUrl(String imagemUrl) {
+        this.imagemUrl = imagemUrl;
     }
 
     public Long getCategoriaId() {
@@ -238,31 +228,15 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         MaterialRequestDTO that = (MaterialRequestDTO) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(nome, that.nome) &&
-                situacao == that.situacao &&
-                Objects.equals(patrimonio, that.patrimonio) &&
-                Objects.equals(categoriaId, that.categoriaId) &&
-                Objects.equals(setorId, that.setorId) &&
-                Objects.equals(localizacaoFisica, that.localizacaoFisica) &&
-                Objects.equals(dataAquisicao, that.dataAquisicao) &&
-                Objects.equals(descricao, that.descricao) &&
-                Objects.equals(valorCompra, that.valorCompra) &&
-                Objects.equals(identificacaoRecibo, that.identificacaoRecibo) &&
-                Objects.equals(qrValor, that.qrValor) &&
-                tipoDepreciacao == that.tipoDepreciacao &&
-                Objects.equals(percentualDepreciacao, that.percentualDepreciacao) &&
-                Objects.equals(vidaUtilAnos, that.vidaUtilAnos) &&
-                Objects.equals(valorAtual, that.valorAtual);
+        return Objects.equals(id, that.id) && Objects.equals(nome, that.nome) && situacao == that.situacao && Objects.equals(patrimonio, that.patrimonio) && Objects.equals(imagemUrl, that.imagemUrl) && Objects.equals(categoriaId, that.categoriaId) && Objects.equals(setorId, that.setorId) && Objects.equals(origemId, that.origemId) && Objects.equals(localizacaoFisica, that.localizacaoFisica) && Objects.equals(dataAquisicao, that.dataAquisicao) && Objects.equals(descricao, that.descricao) && Objects.equals(valorCompra, that.valorCompra) && Objects.equals(identificacaoRecibo, that.identificacaoRecibo) && Objects.equals(qrValor, that.qrValor) && tipoDepreciacao == that.tipoDepreciacao && Objects.equals(percentualDepreciacao, that.percentualDepreciacao) && Objects.equals(vidaUtilAnos, that.vidaUtilAnos) && Objects.equals(valorAtual, that.valorAtual);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, categoriaId, setorId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
+        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, imagemUrl, categoriaId, setorId, origemId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
     }
 
     @Override
@@ -272,8 +246,10 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
                 ", nome='" + nome + '\'' +
                 ", situacao=" + situacao +
                 ", patrimonio='" + patrimonio + '\'' +
+                ", imagemUrl='" + imagemUrl + '\'' +
                 ", categoriaId=" + categoriaId +
                 ", setorId=" + setorId +
+                ", origemId=" + origemId +
                 ", localizacaoFisica='" + localizacaoFisica + '\'' +
                 ", dataAquisicao=" + dataAquisicao +
                 ", descricao='" + descricao + '\'' +

@@ -17,14 +17,16 @@ public interface MaterialMapper {
     @Mappings({
             @Mapping(source = "categoriaId", target = "categoria"),
             @Mapping(source = "setorId", target = "setor"),
-            @Mapping(source = "origemId", target = "origem")
+            @Mapping(source = "origemId", target = "origem"),
+            @Mapping(source = "imagemUrl", target = "imagemUrl")
     })
     Material toEntity(MaterialRequestDTO dto);
 
     @Mappings({
             @Mapping(source = "categoria.id", target = "categoriaId"),
             @Mapping(source = "setor.id", target = "setorId"),
-            @Mapping(source = "origem.id", target = "origemId")
+            @Mapping(source = "origem.id", target = "origemId"),
+            @Mapping(source = "imagemUrl", target = "imagemUrl")
     })
     MaterialResponseDTO toResponse(Material entity);
 
@@ -32,13 +34,12 @@ public interface MaterialMapper {
     @Mappings({
             @Mapping(source = "categoriaId", target = "categoria"),
             @Mapping(source = "setorId", target = "setor"),
-            @Mapping(source = "origemId", target = "origem")
+            @Mapping(source = "origemId", target = "origem"),
+            @Mapping(source = "imagemUrl", target = "imagemUrl")
     })
     void updateFromRequest(MaterialRequestDTO dto, @MappingTarget Material entity);
 
-    /**
-     * Default methods to map nested IDs to entities
-     */
+    // Helpers para tipos aninhados
     default Categoria mapCategoria(Long id) {
         if (id == null) return null;
         Categoria c = new Categoria();

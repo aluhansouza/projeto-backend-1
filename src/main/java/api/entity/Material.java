@@ -43,6 +43,9 @@ public class Material  implements Serializable {
     @Column(name = "patrimonio", unique = true, length = 4)
     private String patrimonio;
 
+    @Column(name = "imagem_url")
+    private String imagemUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
@@ -89,6 +92,27 @@ public class Material  implements Serializable {
     // Construtores
     public Material() {}
 
+    public Material(Long id, String nome, Situacao situacao, String patrimonio, String imagemUrl, Categoria categoria, Setor setor, Origem origem, String localizacaoFisica, LocalDate dataAquisicao, String descricao, BigDecimal valorCompra, String identificacaoRecibo, String qrValor, TipoDepreciacao tipoDepreciacao, BigDecimal percentualDepreciacao, Integer vidaUtilAnos, BigDecimal valorAtual) {
+        this.id = id;
+        this.nome = nome;
+        this.situacao = situacao;
+        this.patrimonio = patrimonio;
+        this.imagemUrl = imagemUrl;
+        this.categoria = categoria;
+        this.setor = setor;
+        this.origem = origem;
+        this.localizacaoFisica = localizacaoFisica;
+        this.dataAquisicao = dataAquisicao;
+        this.descricao = descricao;
+        this.valorCompra = valorCompra;
+        this.identificacaoRecibo = identificacaoRecibo;
+        this.qrValor = qrValor;
+        this.tipoDepreciacao = tipoDepreciacao;
+        this.percentualDepreciacao = percentualDepreciacao;
+        this.vidaUtilAnos = vidaUtilAnos;
+        this.valorAtual = valorAtual;
+    }
+
     // Getters e Setters
 
     public Long getId() {
@@ -121,6 +145,14 @@ public class Material  implements Serializable {
 
     public void setPatrimonio(String patrimonio) {
         this.patrimonio = patrimonio;
+    }
+
+    public String getImagemUrl() {
+        return imagemUrl;
+    }
+
+    public void setImagemUrl(String imagemUrl) {
+        this.imagemUrl = imagemUrl;
     }
 
     public Categoria getCategoria() {
@@ -229,15 +261,14 @@ public class Material  implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Material)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Material material = (Material) o;
-        return Objects.equals(id, material.id);
+        return Objects.equals(id, material.id) && Objects.equals(nome, material.nome) && situacao == material.situacao && Objects.equals(patrimonio, material.patrimonio) && Objects.equals(imagemUrl, material.imagemUrl) && Objects.equals(categoria, material.categoria) && Objects.equals(setor, material.setor) && Objects.equals(origem, material.origem) && Objects.equals(localizacaoFisica, material.localizacaoFisica) && Objects.equals(dataAquisicao, material.dataAquisicao) && Objects.equals(descricao, material.descricao) && Objects.equals(valorCompra, material.valorCompra) && Objects.equals(identificacaoRecibo, material.identificacaoRecibo) && Objects.equals(qrValor, material.qrValor) && tipoDepreciacao == material.tipoDepreciacao && Objects.equals(percentualDepreciacao, material.percentualDepreciacao) && Objects.equals(vidaUtilAnos, material.vidaUtilAnos) && Objects.equals(valorAtual, material.valorAtual);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, nome, situacao, patrimonio, imagemUrl, categoria, setor, origem, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
     }
 
     @Override
@@ -247,9 +278,10 @@ public class Material  implements Serializable {
                 ", nome='" + nome + '\'' +
                 ", situacao=" + situacao +
                 ", patrimonio='" + patrimonio + '\'' +
-                ", categoria=" + (categoria != null ? categoria.getId() : null) +
-                ", setor=" + (setor != null ? setor.getId() : null) +
-                ", origem=" + (origem != null ? origem.getId() : null) +
+                ", imagemUrl='" + imagemUrl + '\'' +
+                ", categoria=" + categoria +
+                ", setor=" + setor +
+                ", origem=" + origem +
                 ", localizacaoFisica='" + localizacaoFisica + '\'' +
                 ", dataAquisicao=" + dataAquisicao +
                 ", descricao='" + descricao + '\'' +
@@ -262,7 +294,4 @@ public class Material  implements Serializable {
                 ", valorAtual=" + valorAtual +
                 '}';
     }
-
-
-
 }
