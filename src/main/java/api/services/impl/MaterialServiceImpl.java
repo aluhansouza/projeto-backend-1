@@ -3,10 +3,7 @@ package api.services.impl;
 import api.controllers.MaterialController;
 import api.dto.request.MaterialRequestDTO;
 import api.dto.response.MaterialResponseDTO;
-import api.entity.Categoria;
 import api.entity.Material;
-import api.entity.Origem;
-import api.entity.Setor;
 import api.exceptions.BadRequestException;
 import api.exceptions.FileStorageException;
 import api.exceptions.RequiredObjectIsNullException;
@@ -15,6 +12,7 @@ import api.file.exporter.contract.MaterialExporter;
 import api.file.exporter.factory.FileExporterFactory;
 import api.file.importer.contract.MaterialImporter;
 import api.file.importer.factory.FileImporterFactory;
+import api.mapstruct.MaterialMapper;
 import api.repository.MaterialRepository;
 import api.services.interfaces.MaterialService;
 import org.slf4j.Logger;
@@ -22,353 +20,372 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
-import static api.mapper.ObjectMapper.parseObject;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class MaterialServiceImpl implements MaterialService {
 
-    private Logger logger = LoggerFactory.getLogger(MaterialServiceImpl.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(MaterialServiceImpl.class);
+    private final MaterialRepository materialRepository;
+    private final MaterialMapper materialMapper;
+    private final FileImporterFactory importer;
+    private final FileExporterFactory exporter;
+    private final PagedResourcesAssembler<MaterialResponseDTO> assembler;
 
     @Autowired
-    MaterialRepository materialRepository;
-
-    @Autowired
-    FileImporterFactory importer;
-
-    @Autowired
-    FileExporterFactory exporter;
-
-
-    @Autowired
-    PagedResourcesAssembler<MaterialResponseDTO> assembler;
-
-    //@Override
-    @Transactional(readOnly = true)
-    public PagedModel<EntityModel<MaterialResponseDTO>> listar(Pageable pageable) {
-
-        logger.info("Finding all Materiais!");
-
-        var materiais = materialRepository.findAll(pageable);
-
-        List<MaterialResponseDTO> dtos = materiais.getContent().stream()
-                .map(material ->{MaterialResponseDTO dto = new MaterialResponseDTO();
-
-                    dto.setId(material.getId());
-                    dto.setNome(material.getNome());
-
-                    if(material.getCategoria() != null) {
-                        dto.setCategoriaId(material.getCategoria().getId());
-                        System.out.println("ID da Categoria: "+ dto.getCategoriaId());
-                    }
-
-                    if(material.getSetor() != null) {
-                        dto.setSetorId(material.getSetor().getId());
-                        System.out.println("ID do Setor: "+ dto.getSetorId());
-                    }
-
-                    if(material.getOrigem() != null) {
-                        dto.setOrigemId(material.getOrigem().getId());
-                        System.out.println("ID da Origem: "+ dto.getOrigemId());
-                    }
-
-                    return dto;}).toList();
-
-        return buildPagedModel(pageable, materiais);
-        //return buildPagedModel(pageable, new PageImpl<>(dtos, pageable, materiais.getTotalElements()));
+    public MaterialServiceImpl(MaterialRepository materialRepository,
+                               MaterialMapper materialMapper,
+                               FileImporterFactory importer,
+                               FileExporterFactory exporter,
+                               PagedResourcesAssembler<MaterialResponseDTO> assembler) {
+        this.materialRepository = materialRepository;
+        this.materialMapper = materialMapper;
+        this.importer = importer;
+        this.exporter = exporter;
+        this.assembler = assembler;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public PagedModel<EntityModel<MaterialResponseDTO>> listar(Pageable pageable) {
+        logger.info("Finding all Materiais!");
+
+        // 1. Busca paginada
+        Page<Material> page = materialRepository.findAll(pageable);
+
+        // 2. Converte diretamente cada entidade em DTO, já numa Page
+        Page<MaterialResponseDTO> dtoPage = page.map(material -> {
+            MaterialResponseDTO dto = materialMapper.toResponse(material);
+            addHateoasLinks(dto);
+            return dto;
+        });
+
+        // 3. Monta o link “self” para essa mesma página
+        Link selfLink = linkTo(methodOn(MaterialController.class)
+                .listar(
+                        pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        pageable.getSort().toString()
+                ))
+                .withSelfRel();
+
+        // 4. Único return: delega ao assembler para criar o PagedModel
+        return assembler.toModel(dtoPage, selfLink);
+    }
 
     @Override
     @Transactional(readOnly = true)
     public PagedModel<EntityModel<MaterialResponseDTO>> buscarPorNome(String nome, Pageable pageable) {
-
         logger.info("Finding Material by name!");
 
+        // 1. Busca paginada filtrando por nome
+        Page<Material> page = materialRepository.buscarPorNome(nome, pageable);
 
+        // 2. Converte cada entidade em DTO com MapStruct e adiciona HATEOAS
+        Page<MaterialResponseDTO> dtoPage = page.map(material -> {
+            MaterialResponseDTO dto = materialMapper.toResponse(material);
+            addHateoasLinks(dto);
+            return dto;
+        });
 
-        var people = materialRepository.buscarPorNome(nome, pageable);
-        return buildPagedModel(pageable, people);
+        // 3. Cria link self para esta consulta
+        Link selfLink = linkTo(methodOn(MaterialController.class)
+                .buscarPorNome(nome, pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort().toString()))
+                .withSelfRel();
+
+        // 4. Retorna o modelo de página com metadados de paginação e links
+        return assembler.toModel(dtoPage, selfLink);
     }
 
     @Override
     @Transactional(readOnly = true)
     public MaterialResponseDTO buscarPorId(Long id) {
-        logger.info("Finding one Person!");
+        logger.info("Finding one Material!");
 
-        var entity = materialRepository.findById(id)
+        // 1. Busca a entidade ou lança exceção se não existir
+        Material material = materialRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
-        var dto = parseObject(entity, MaterialResponseDTO.class);
+
+        // 2. Converte para DTO e adiciona links HATEOAS
+        MaterialResponseDTO dto = materialMapper.toResponse(material);
         addHateoasLinks(dto);
+
+        // 3. Retorna o DTO completamente populado
         return dto;
     }
 
     @Override
     @Transactional
-    public MaterialResponseDTO cadastrar(MaterialRequestDTO materialRequestDTO) {
-
-        if (materialRequestDTO == null) {
+    public MaterialResponseDTO cadastrar(MaterialRequestDTO dtoRequest) {
+        // … validações e log omitidos
+        if (dtoRequest == null) {
+            logger.error("MaterialRequestDTO está nulo ao tentar cadastrar material");
             throw new RequiredObjectIsNullException();
         }
-
-        logger.info("Criando novo Material!");
-
-        var entity = parseObject(materialRequestDTO, Material.class);
-
-        // Associando Setor
-        if (materialRequestDTO.getSetorId() != null) {
-            Setor setor = new Setor();
-            setor.setId(materialRequestDTO.getSetorId());
-            System.out.println("ID do Setor: "+ materialRequestDTO.getSetorId());
-            entity.setSetor(setor);
+        if (dtoRequest.getId() != null) {
+            logger.error("ID do DTO deve ser nulo em operação de criação (recebido id={})", dtoRequest.getId());
+            throw new BadRequestException("Não informe ID ao criar um novo material");
         }
 
-        // Associando Categoria
-        if (materialRequestDTO.getCategoriaId() != null) {
-            Categoria categoria = new Categoria();
-            categoria.setId(materialRequestDTO.getCategoriaId());
-            System.out.println("ID da Categoria: "+ materialRequestDTO.getCategoriaId());
-            entity.setCategoria(categoria);
-        }
+        // 1. Converte e salva pela primeira vez, obtendo o ID gerado
+        Material entity = materialMapper.toEntity(dtoRequest);
+        Material saved = materialRepository.save(entity);  // ← aqui o saved.getId() já está preenchido
 
-        // Associando Origem
-        if (materialRequestDTO.getOrigemId() != null) {
-            Origem origem = new Origem();
-            origem.setId(materialRequestDTO.getOrigemId());
-            System.out.println("ID da Origem: "+ materialRequestDTO.getOrigemId());
-            entity.setOrigem(origem);
-        }
-
-        var materialSalvo = materialRepository.save(entity);
-
-        System.out.println("QRCODEVALOR: "+materialRequestDTO.getQrValor());
-
-        var entidade = materialRepository.findById(materialSalvo.getId()).orElseThrow();
-
-
-        String url = ServletUriComponentsBuilder
+        // 2. Monta a URL usando o ID recém-gerado
+        String qrUrl = ServletUriComponentsBuilder
+                // baseia-se no contexto atual (ex.: http://localhost:8080)
                 .fromCurrentContextPath()
-                .path("/api/materiais/{id}")
-                .buildAndExpand(materialSalvo.getId())
+                // acrescenta o path, com placeholder para o {id}
+                .path("/api/v1/materiais/{id}")
+                // substitui {id} pelo valor real
+                .buildAndExpand(saved.getId())
+                // converte para String: "http://localhost:8080/api/v1/materiais/123"
                 .toUriString();
-        entidade.setQrValor(url);
-        entidade = materialRepository.save(entity);
-        var dto = parseObject(entidade, MaterialResponseDTO.class);
 
-        System.out.println("QRCODEVALOR: "+materialRequestDTO.getQrValor());
+        // 3. Atualiza o campo qrValor e salva novamente
+        saved.setQrValor(qrUrl);
+        saved = materialRepository.save(saved);
 
-        logger.debug("Material persistido com ID={} e qrcodevalor={}", dto.getId(), dto.getQrValor());
+        logger.debug("Material criado com ID={} e qrValor={}", saved.getId(), qrUrl);
 
-        addHateoasLinks(dto);
+        // 4. Converte para DTO e adiciona HATEOAS
+        MaterialResponseDTO response = materialMapper.toResponse(saved);
+        addHateoasLinks(response);
 
-        return dto;
-
+        return response;
     }
 
     @Override
     @Transactional
-    public MaterialResponseDTO atualizar(MaterialRequestDTO materialRequestDTO) {
-
-        if (materialRequestDTO == null) throw new RequiredObjectIsNullException();
-
-        logger.info("Updating one material!");
-        Material material = materialRepository.findById(materialRequestDTO.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
-
-        // Associando Setor
-        if (materialRequestDTO.getSetorId() != null) {
-            Setor setor = new Setor();
-            setor.setId(materialRequestDTO.getSetorId());
-            System.out.println("ID do Setor: "+ materialRequestDTO.getSetorId());
-            material.setSetor(setor);
+    public MaterialResponseDTO atualizar(MaterialRequestDTO dtoRequest) {
+        // 1. Validações iniciais
+        if (dtoRequest == null) {
+            logger.error("MaterialRequestDTO está nulo ao tentar atualizar material");
+            throw new RequiredObjectIsNullException();
+        }
+        if (dtoRequest.getId() == null) {
+            logger.error("ID não informado no DTO ao tentar atualizar");
+            throw new BadRequestException("ID deve ser informado para atualizar um material existente");
         }
 
-        // Associando Categoria
-        if (materialRequestDTO.getCategoriaId() != null) {
-            Categoria categoria = new Categoria();
-            categoria.setId(materialRequestDTO.getCategoriaId());
-            System.out.println("ID da Categoria: "+ materialRequestDTO.getCategoriaId());
-            material.setCategoria(categoria);
-        }
+        // 2. Log de entrada
+        logger.info("Atualizando Material: id={}, nome='{}'", dtoRequest.getId(), dtoRequest.getNome());
 
-        // Associando Origem
-        if (materialRequestDTO.getOrigemId() != null) {
-            Origem origem = new Origem();
-            origem.setId(materialRequestDTO.getOrigemId());
-            System.out.println("ID da Origem: "+ materialRequestDTO.getOrigemId());
-            material.setOrigem(origem);
-        }
+        // 3. Busca a entidade existente ou lança exceção
+        Material entity = materialRepository.findById(dtoRequest.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Nenhum material encontrado para o ID %d", dtoRequest.getId())
+                ));
 
+        // 4. Mapeia campos não-nulos do DTO para a entidade
+        materialMapper.updateFromRequest(dtoRequest, entity);
 
-        material.setNome(materialRequestDTO.getNome());
+        // 5. Persiste as alterações
+        Material updated = materialRepository.save(entity);
+        logger.debug("Material atualizado com sucesso: id={}", updated.getId());
 
-        Material.Situacao enumSituacao = Material.Situacao.valueOf(materialRequestDTO.getSituacao().name());
-        material.setSituacao(enumSituacao);
-
-        material.setPatrimonio(materialRequestDTO.getPatrimonio());
-        material.setLocalizacaoFisica(materialRequestDTO.getLocalizacaoFisica());
-        material.setDataAquisicao(materialRequestDTO.getDataAquisicao());
-        material.setDescricao(materialRequestDTO.getDescricao());
-        material.setValorCompra(materialRequestDTO.getValorCompra());
-        material.setIdentificacaoRecibo(materialRequestDTO.getIdentificacaoRecibo());
-
-        Material.TipoDepreciacao enumTipoDepreciacao = Material.TipoDepreciacao.valueOf(materialRequestDTO.getTipoDepreciacao().name());
-        material.setTipoDepreciacao(enumTipoDepreciacao);
-
-        material.setPercentualDepreciacao(materialRequestDTO.getPercentualDepreciacao());
-        material.setVidaUtilAnos(materialRequestDTO.getVidaUtilAnos());
-        material.setValorAtual(materialRequestDTO.getValorAtual());
-
-        //material.setTipoDepreciacao(Material.TipoDepreciacao.LINEAR);
-        //material.setSituacao(Material.Situacao.EMPRESTADO);
-
-        var dto = parseObject(materialRepository.save(material), MaterialResponseDTO.class);
-        addHateoasLinks(dto);
-        return dto;
+        // 6. Converte para DTO de resposta, adiciona HATEOAS e retorna
+        MaterialResponseDTO response = materialMapper.toResponse(updated);
+        addHateoasLinks(response);
+        return response;
     }
 
     @Override
     @Transactional
     public void excluir(Long id) {
+        // 1. Validação de ID
+        if (id == null) {
+            logger.error("ID não informado ao tentar excluir material");
+            throw new BadRequestException("ID deve ser informado para excluir um material");
+        }
 
-        logger.info("Deleting one Material!");
+        // 2. Log de entrada
+        logger.info("Excluindo Material: id={}", id);
 
-        Material material = materialRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
-        materialRepository.delete(material);
+        // 3. Busca a entidade ou lança exceção se não existir
+        Material entity = materialRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Nenhum material encontrado para o ID %d", id)
+                ));
+
+        // 4. Remove a entidade
+        materialRepository.delete(entity);
+        logger.debug("Material excluído com sucesso: id={}", id);
     }
-
-
-// ---------------------------------------------------------------------------------------------------------------//
-
 
     @Override
     public Resource exportarPagina(Pageable pageable, String acceptHeader) {
-        logger.info("Exporting a Material page!");
-
-        var materiais = materialRepository.findAll(pageable)
-                .map(equipamento -> parseObject(equipamento, MaterialResponseDTO.class))
-                .getContent();
-
-        try {
-            MaterialExporter exporter = this.exporter.getExporter(acceptHeader);
-            return exporter.exportMateriais(materiais);
-        } catch (Exception e) {
-            throw new RuntimeException("Error during file export!", e);
+        // 1. Validação de parâmetros
+        if (pageable == null) {
+            logger.error("Parâmetros de paginação não informados ao exportar página de materiais");
+            throw new BadRequestException("Parâmetros de paginação são obrigatórios");
         }
-    }
-
-    public Resource exportMaterial(Long id, String acceptHeader) {
-        logger.info("Exporting data of one Material!");
-
-        var material = materialRepository.findById(id)
-                .map(entity -> parseObject(entity, MaterialResponseDTO.class))
-                .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
-
-        try {
-            MaterialExporter exporter = this.exporter.getExporter(acceptHeader);
-            return exporter.exportMaterial(material);
-        } catch (Exception e) {
-            throw new RuntimeException("Error during file export!", e);
+        if (acceptHeader == null || acceptHeader.isBlank()) {
+            logger.error("Accept header não informado ao exportar página de materiais");
+            throw new BadRequestException("Tipo de mídia (Accept header) é obrigatório para exportação");
         }
-    }
 
+        // 2. Log de entrada
+        logger.info("Exportando página de Materiais: page={}, size={}, sort={}",
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                pageable.getSort());
+
+        // 3. Busca e mapeia todos os materiais da página para DTOs
+        List<MaterialResponseDTO> dtos = materialRepository.findAll(pageable)
+                .map(materialMapper::toResponse)
+                .stream()
+                .peek(this::addHateoasLinks)
+                .toList();
+
+        // 4. Seleciona o exporter apropriado e gera o arquivo com tratamento de exceções
+        Resource file;
+        try {
+            MaterialExporter materialExporter = exporter.getExporter(acceptHeader);
+            file = materialExporter.exportMateriais(dtos);
+        } catch (Exception e) {
+            logger.error("Erro ao exportar página de materiais", e);
+            throw new FileStorageException("Erro ao exportar página de materiais", e);
+        }
+
+        logger.debug("Exportação concluída: {} registros, tipo={}", dtos.size(), acceptHeader);
+        return file;
+    }
 
     @Override
+    public Resource exportMaterial(Long id, String acceptHeader) {
+        // 1. Validações iniciais
+        if (id == null) {
+            logger.error("ID não informado ao tentar exportar material");
+            throw new BadRequestException("ID é obrigatório para exportação");
+        }
+        if (acceptHeader == null || acceptHeader.isBlank()) {
+            logger.error("Accept header não informado ao tentar exportar material id={}", id);
+            throw new BadRequestException("Tipo de mídia (Accept header) é obrigatório para exportação");
+        }
+
+        // 2. Log de entrada
+        logger.info("Exportando dados de Material: id={}, tipo={}", id, acceptHeader);
+
+        // 3. Busca a entidade ou lança exceção
+        Material entity = materialRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Nenhum material encontrado para o ID %d", id)
+                ));
+
+        // 4. Converte para DTO e adiciona links HATEOAS
+        MaterialResponseDTO dto = materialMapper.toResponse(entity);
+        addHateoasLinks(dto);
+
+        // 5. Obtém o exporter certo e gera o Resource com tratamento de exceções
+        Resource file;
+        try {
+            MaterialExporter materialExporter = exporter.getExporter(acceptHeader);
+            file = materialExporter.exportMaterial(dto);
+        } catch (Exception e) {
+            logger.error("Erro ao exportar material id={}", id, e);
+            throw new FileStorageException("Erro ao exportar material id=" + id, e);
+        }
+
+        logger.debug("Exportação concluída para material id={}", id);
+        return file;
+    }
+
+    @Override
+    @Transactional
     public List<MaterialResponseDTO> massCreation(MultipartFile file) {
-        logger.info("Importing People from file!");
+        // 1. Validação do arquivo
+        if (file == null || file.isEmpty()) {
+            logger.error("Arquivo de importação vazio ou nulo");
+            throw new BadRequestException("Arquivo de importação é obrigatório e não pode estar vazio");
+        }
 
-        if (file.isEmpty()) throw new BadRequestException("Please set a Valid File!");
+        // 2. Log de entrada
+        logger.info("Importando materiais de arquivo: {}", file.getOriginalFilename());
 
-        try (InputStream inputStream = file.getInputStream()) {
+        try (InputStream is = file.getInputStream()) {
+            // 3. Determina nome do arquivo
             String filename = Optional.ofNullable(file.getOriginalFilename())
-                    .orElseThrow(() -> new BadRequestException("File name cannot be null"));
+                    .orElseThrow(() -> new BadRequestException("Nome do arquivo não pode ser nulo"));
             MaterialImporter importer = this.importer.getImporter(filename);
 
-            List<Material> entities = importer.importFile(inputStream).stream()
-                    .map(dto -> materialRepository.save(parseObject(dto, Material.class)))
+            // 4. Importa e persiste cada material
+            List<Material> entities = importer.importFile(is).stream()
+                    .map(materialMapper::toEntity)
+                    .map(materialRepository::save)
                     .toList();
 
-            return entities.stream()
-                    .map(entity -> {
-                        var dto = parseObject(entity, MaterialResponseDTO.class);
-                        addHateoasLinks(dto);
-                        return dto;
-                    })
+            // 5. Converte para DTO, adiciona HATEOAS e coleta resultados
+            List<MaterialResponseDTO> dtos = entities.stream()
+                    .map(materialMapper::toResponse)
+                    .peek(this::addHateoasLinks)
                     .toList();
+
+            logger.debug("Importação concluída: {} materiais importados", dtos.size());
+            return dtos;
+
+        } catch (IOException e) {
+            logger.error("Erro ao ler o arquivo de importação", e);
+            throw new FileStorageException("Erro ao processar o arquivo de importação", e);
         } catch (Exception e) {
-            throw new FileStorageException("Error processing the file!");
+            logger.error("Erro inesperado durante importação", e);
+            throw new FileStorageException("Erro ao processar o arquivo de importação", e);
         }
     }
 
-
-    private PagedModel<EntityModel<MaterialResponseDTO>> buildPagedModel(Pageable pageable, Page<Material> materiais) {
-
-        var materiaisWithLinks = materiais.map(material -> {
-            var dto = parseObject(material, MaterialResponseDTO.class);
-            dto.setCategoriaId(material.getCategoria() != null ? material.getCategoria().getId() : null);
-            dto.setSetorId(material.getSetor() != null ? material.getSetor().getId() : null);
-            dto.setOrigemId(material.getOrigem() != null ? material.getOrigem().getId() : null);
-            addHateoasLinks(dto);
-            return dto;
-        });
-
-        Link findAllLink = WebMvcLinkBuilder.linkTo(
-                        WebMvcLinkBuilder.methodOn(MaterialController.class)
-                                .listar(
-                                        pageable.getPageNumber(),
-                                        pageable.getPageSize(),
-                                        String.valueOf(pageable.getSort())))
-                .withSelfRel();
-        return assembler.toModel(materiaisWithLinks, findAllLink);
-    }
-
-
-// ---------------------------------------------------------------------------------------------------------------//
-
     private void addHateoasLinks(MaterialResponseDTO dto) {
-        dto.add(linkTo(methodOn(MaterialController.class).listar(1, 12, "asc")).withRel("listar").withType("GET"));
-        dto.add(linkTo(methodOn(MaterialController.class).buscarPorNome("", 1, 12, "asc")).withRel("buscarPorNome").withType("GET"));
-        dto.add(linkTo(methodOn(MaterialController.class).buscarPorId(dto.getId())).withSelfRel().withType("GET"));
-        dto.add(linkTo(methodOn(MaterialController.class).cadastrar((MaterialRequestDTO) null)).withRel("cadastrar").withType("POST"));
-        dto.add(linkTo(methodOn(MaterialController.class)).slash("massCreation").withRel("massCreation").withType("POST"));
-        dto.add(linkTo(methodOn(MaterialController.class).atualizar((MaterialRequestDTO) null)).withRel("atualizar").withType("PUT"));
-        dto.add(linkTo(methodOn(MaterialController.class).excluir(dto.getId())).withRel("excluir").withType("DELETE"));
+        // 1. Listar (coleção) – template para page, size e direction
+        dto.add(Link.of(
+                linkTo(methodOn(MaterialController.class).listar(0, 0, null)).toUri().toString()
+                        .replace("?page=0&size=0&direction=null", "{?page,size,direction}"),
+                "listar"
+        ).withType("GET"));
 
+        // 2. Buscar por nome (coleção filtrada) – template para nome, page, size e direction
+        dto.add(Link.of(
+                linkTo(methodOn(MaterialController.class).buscarPorNome("", 0, 0, null)).toUri().toString()
+                        .replace("/buscarPorNome/&page=0&size=0&direction=null", "/buscarPorNome/{nome}{?page,size,direction}"),
+                "buscarPorNome"
+        ).withType("GET"));
+
+        // 3. Self (recurso único)
         dto.add(linkTo(methodOn(MaterialController.class)
-                .exportarPagina(
-                        1, 12, "asc", null))
-                .withRel("exportarPagina")
-                .withType("GET")
-                .withTitle("Exportar Materiais")
-        );
+                .buscarPorId(dto.getId()))
+                .withSelfRel()
+                .withType("GET"));
+
+        // 4. Create
+        dto.add(linkTo(methodOn(MaterialController.class)
+                .cadastrar(null))
+                .withRel("cadastrar")
+                .withType("POST"));
+
+        // 5. Update
+        dto.add(linkTo(methodOn(MaterialController.class)
+                .atualizar(null))
+                .withRel("atualizar")
+                .withType("PUT"));
+
+        // 6. Delete
+        dto.add(linkTo(methodOn(MaterialController.class)
+                .excluir(dto.getId()))
+                .withRel("excluir")
+                .withType("DELETE"));
     }
-
-
-
-    // ---------------------------------------------------------------------------------//
-
-
-
-
 }
-
-
-

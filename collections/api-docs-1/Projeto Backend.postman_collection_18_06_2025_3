@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "779c936d-e737-403c-9e42-07b83ccb89db",
+		"_postman_id": "50dbeb7d-6903-4981-82fe-8b23e1aa0922",
 		"name": "Projeto Backend",
 		"description": "Projeto Backend",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -241,7 +241,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"id\": 17,\n    \"nome\": \"Testando1234\"\n}",
+									"raw": "{\n    \"id\": 1,\n    \"nome\": \"Monitor 2879\",\n    \"situacao\": \"DISPONÍVEL\",\n    \"patrimonio\": \"2027\",\n    \"categoriaId\": 1,\n    \"setorId\": 1,\n    \"origemId\": 1,\n    \"localizacaoFisica\": \"Sala 120\",\n    \"dataAquisicao\": \"2023-10-01\",\n    \"descricao\": \"Monitor LED 24 polegadas\",\n    \"valorCompra\": 1500.00,\n    \"identificacaoRecibo\": \"REC001\",\n    \"qrValor\": \"QR123456789\",\n    \"tipoDepreciacao\": \"LINEAR\",\n    \"percentualDepreciacao\": 5.00,\n    \"vidaUtilAnos\": 5,\n    \"valorAtual\": 1500.00\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -249,14 +249,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/api/v1/equipamentos",
+									"raw": "{{baseUrl}}/api/v1/materiais",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"api",
 										"v1",
-										"equipamentos"
+										"materiais"
 									]
 								},
 								"description": "Método Atualizar"
@@ -722,22 +722,15 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/v1/equipamentos/:id",
+									"raw": "{{baseUrl}}/api/v1/materiais/1",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"api",
 										"v1",
-										"equipamentos",
-										":id"
-									],
-									"variable": [
-										{
-											"key": "id",
-											"value": "-71568130",
-											"description": "(Required) "
-										}
+										"materiais",
+										"1"
 									]
 								},
 								"description": "Método Buscar por Id"
@@ -988,7 +981,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"nome\": \"Monitor LED\",\n    \"situacao\": \"DISPONÍVEL\",\n    \"patrimonio\": \"0001\",\n    \"categoriaId\": 1,\n    \"setorId\": 1,\n    \"localizacaoFisica\": \"Sala 101\",\n    \"dataAquisicao\": \"2023-10-01\",\n    \"descricao\": \"Monitor LED 24 polegadas\",\n    \"valorCompra\": 1500.00,\n    \"identificacaoRecibo\": \"REC001\",\n    \"qrCodeValor\": \"QR123456789\",\n    \"tipoDepreciacao\": \"LINEAR\",\n    \"percentualDepreciacao\": 5.00,\n    \"vidaUtilAnos\": 5,\n    \"valorAtual\": 1500.00\n}",
+									"raw": "{\n    \"nome\": \"Monitor 1650\",\n    \"situacao\": \"DISPONÍVEL\",\n    \"patrimonio\": \"2025\",\n    \"categoriaId\": 1,\n    \"setorId\": 1,\n    \"origemId\": 1,\n    \"localizacaoFisica\": \"Sala 101\",\n    \"dataAquisicao\": \"2023-10-01\",\n    \"descricao\": \"Monitor LED 24 polegadas\",\n    \"valorCompra\": 1500.00,\n    \"identificacaoRecibo\": \"REC001\",\n    \"qrValor\": \"QR123456789\",\n    \"tipoDepreciacao\": \"LINEAR\",\n    \"percentualDepreciacao\": 5.00,\n    \"vidaUtilAnos\": 5,\n    \"valorAtual\": 1500.00\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1189,14 +1182,14 @@
 									]
 								},
 								"url": {
-									"raw": "{{baseUrl}}/api/v1/equipamentos/massCreation",
+									"raw": "{{baseUrl}}/api/v1/materiais/massCreation",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"api",
 										"v1",
-										"equipamentos",
+										"materiais",
 										"massCreation"
 									]
 								}
@@ -1228,14 +1221,14 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/v1/equipamentos/exportarPagina?page=0&size=12&direction=asc",
+									"raw": "{{baseUrl}}/api/v1/materiais/exportarPagina?page=0&size=12&direction=asc",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"api",
 										"v1",
-										"equipamentos",
+										"materiais",
 										"exportarPagina"
 									],
 									"query": [
@@ -1267,14 +1260,14 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/api/v1/equipamentos/exportar/2",
+									"raw": "{{baseUrl}}/api/v1/materiais/exportar/2",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"api",
 										"v1",
-										"equipamentos",
+										"materiais",
 										"exportar",
 										"2"
 									]
@@ -1597,7 +1590,10 @@
 					"name": "Multiple Upload",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				},
