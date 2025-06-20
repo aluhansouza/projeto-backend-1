@@ -17,8 +17,7 @@ public interface MaterialMapper {
     @Mappings({
             @Mapping(source = "categoriaId", target = "categoria"),
             @Mapping(source = "setorId", target = "setor"),
-            @Mapping(source = "origemId", target = "origem"),
-            @Mapping(source = "imagemUrl", target = "imagemUrl")
+            @Mapping(source = "origemId", target = "origem")
     })
     Material toEntity(MaterialRequestDTO dto);
 
@@ -34,8 +33,8 @@ public interface MaterialMapper {
     @Mappings({
             @Mapping(source = "categoriaId", target = "categoria"),
             @Mapping(source = "setorId", target = "setor"),
-            @Mapping(source = "origemId", target = "origem"),
-            @Mapping(source = "imagemUrl", target = "imagemUrl")
+            @Mapping(source = "origemId", target = "origem")
+
     })
     void updateFromRequest(MaterialRequestDTO dto, @MappingTarget Material entity);
 

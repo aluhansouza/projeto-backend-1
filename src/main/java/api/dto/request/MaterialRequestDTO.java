@@ -29,8 +29,6 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
     @Size(min = 1, max = 4, message = "Patrimônio deve ter entre 1 e 4 caracteres")
     private String patrimonio;
 
-    private String imagemUrl;
-
     @NotNull(message = "ID da categoria não pode ser nulo")
     private Long categoriaId;
 
@@ -114,13 +112,6 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
         this.patrimonio = patrimonio;
     }
 
-    public String getImagemUrl() {
-        return imagemUrl;
-    }
-
-    public void setImagemUrl(String imagemUrl) {
-        this.imagemUrl = imagemUrl;
-    }
 
     public Long getCategoriaId() {
         return categoriaId;
@@ -226,40 +217,5 @@ public class MaterialRequestDTO extends RepresentationModel<MaterialRequestDTO> 
         this.valorAtual = valorAtual;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        MaterialRequestDTO that = (MaterialRequestDTO) o;
-        return Objects.equals(id, that.id) && Objects.equals(nome, that.nome) && situacao == that.situacao && Objects.equals(patrimonio, that.patrimonio) && Objects.equals(imagemUrl, that.imagemUrl) && Objects.equals(categoriaId, that.categoriaId) && Objects.equals(setorId, that.setorId) && Objects.equals(origemId, that.origemId) && Objects.equals(localizacaoFisica, that.localizacaoFisica) && Objects.equals(dataAquisicao, that.dataAquisicao) && Objects.equals(descricao, that.descricao) && Objects.equals(valorCompra, that.valorCompra) && Objects.equals(identificacaoRecibo, that.identificacaoRecibo) && Objects.equals(qrValor, that.qrValor) && tipoDepreciacao == that.tipoDepreciacao && Objects.equals(percentualDepreciacao, that.percentualDepreciacao) && Objects.equals(vidaUtilAnos, that.vidaUtilAnos) && Objects.equals(valorAtual, that.valorAtual);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, imagemUrl, categoriaId, setorId, origemId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
-    }
-
-    @Override
-    public String toString() {
-        return "MaterialRequestDTO{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", situacao=" + situacao +
-                ", patrimonio='" + patrimonio + '\'' +
-                ", imagemUrl='" + imagemUrl + '\'' +
-                ", categoriaId=" + categoriaId +
-                ", setorId=" + setorId +
-                ", origemId=" + origemId +
-                ", localizacaoFisica='" + localizacaoFisica + '\'' +
-                ", dataAquisicao=" + dataAquisicao +
-                ", descricao='" + descricao + '\'' +
-                ", valorCompra=" + valorCompra +
-                ", identificacaoRecibo='" + identificacaoRecibo + '\'' +
-                ", qrValor='" + qrValor + '\'' +
-                ", tipoDepreciacao=" + tipoDepreciacao +
-                ", percentualDepreciacao=" + percentualDepreciacao +
-                ", vidaUtilAnos=" + vidaUtilAnos +
-                ", valorAtual=" + valorAtual +
-                '}';
-    }
 }

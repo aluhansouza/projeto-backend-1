@@ -15,6 +15,7 @@ import api.file.importer.factory.FileImporterFactory;
 import api.mapstruct.MaterialMapper;
 import api.repository.MaterialRepository;
 import api.services.interfaces.MaterialService;
+import api.services.utils.FileStorageService;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Service
 public class MaterialServiceImpl implements MaterialService {
 
+
+
     private final Logger logger = LoggerFactory.getLogger(MaterialServiceImpl.class);
     private final MaterialRepository materialRepository;
     private final MaterialMapper materialMapper;
@@ -64,6 +67,9 @@ public class MaterialServiceImpl implements MaterialService {
         this.exporter = exporter;
         this.assembler = assembler;
     }
+
+    @Autowired
+    private FileStorageService storageService;
 
     @Override
     @Transactional(readOnly = true)
@@ -137,42 +143,27 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     @Transactional
     public MaterialResponseDTO cadastrar(MaterialRequestDTO dtoRequest, MultipartFile file) {
-        // 1. validações (como antes)
         if (dtoRequest == null) throw new RequiredObjectIsNullException();
         logger.info("Criando novo Material: nome='{}'", dtoRequest.getNome());
 
-        // 2. salva a entidade para obter o ID
+        // 1) persiste sem imagem para gerar o ID
         Material entity = materialMapper.toEntity(dtoRequest);
         Material saved = materialRepository.save(entity);
 
-        // 3. se vier arquivo, armazena e seta imageUrl
+        // 2) se vier arquivo, usa o FileStorageService
         if (file != null && !file.isEmpty()) {
-            try {
-                // reutiliza a lógica de upload já criada
-                String uploadDir = "uploads/materials";
-                Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-                if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+            String filename = storageService.storeFile(file);
+            // monta URL pública para download
+            String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/uploads/materials/")
+                    .path(filename)
+                    .toUriString();
 
-                String ext = FilenameUtils.getExtension(file.getOriginalFilename());
-                String filename = saved.getId() + "_" + System.currentTimeMillis() + "." + ext;
-                Path target = uploadPath.resolve(filename);
-                file.transferTo(target.toFile());
-
-                String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                        .path("/uploads/materials/")
-                        .path(filename)
-                        .toUriString();
-
-                saved.setImagemUrl(fileUrl);
-                saved = materialRepository.save(saved);
-
-            } catch (IOException e) {
-                logger.error("Falha no upload de imagem para material id={}", saved.getId(), e);
-                throw new FileStorageException("Erro ao armazenar imagem", e);
-            }
+            saved.setImagemUrl(fileUrl);
+            saved = materialRepository.save(saved);
         }
 
-        // 4. gera QR code como antes
+        // 3) QR code (mantém sua lógica atual)
         String qrUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/v1/materiais/{id}")
                 .buildAndExpand(saved.getId())
@@ -180,43 +171,8 @@ public class MaterialServiceImpl implements MaterialService {
         saved.setQrValor(qrUrl);
         saved = materialRepository.save(saved);
 
-        // 5. retorna DTO com links
+        // 4) retorno
         MaterialResponseDTO response = materialMapper.toResponse(saved);
-        addHateoasLinks(response);
-        return response;
-    }
-
-    @Override
-    @Transactional
-    public MaterialResponseDTO atualizar(MaterialRequestDTO dtoRequest) {
-        // 1. Validações iniciais
-        if (dtoRequest == null) {
-            logger.error("MaterialRequestDTO está nulo ao tentar atualizar material");
-            throw new RequiredObjectIsNullException();
-        }
-        if (dtoRequest.getId() == null) {
-            logger.error("ID não informado no DTO ao tentar atualizar");
-            throw new BadRequestException("ID deve ser informado para atualizar um material existente");
-        }
-
-        // 2. Log de entrada
-        logger.info("Atualizando Material: id={}, nome='{}'", dtoRequest.getId(), dtoRequest.getNome());
-
-        // 3. Busca a entidade existente ou lança exceção
-        Material entity = materialRepository.findById(dtoRequest.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Nenhum material encontrado para o ID %d", dtoRequest.getId())
-                ));
-
-        // 4. Mapeia campos não-nulos do DTO para a entidade
-        materialMapper.updateFromRequest(dtoRequest, entity);
-
-        // 5. Persiste as alterações
-        Material updated = materialRepository.save(entity);
-        logger.debug("Material atualizado com sucesso: id={}", updated.getId());
-
-        // 6. Converte para DTO de resposta, adiciona HATEOAS e retorna
-        MaterialResponseDTO response = materialMapper.toResponse(updated);
         addHateoasLinks(response);
         return response;
     }

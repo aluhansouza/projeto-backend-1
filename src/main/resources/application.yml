@@ -1,7 +1,7 @@
 cors:
   originPatterns: http://localhost:8080,http://localhost:3000,https://www.google.com.br
 file:
-  upload-dir: /projeto-funtea/uploads
+  upload-dir: /projeto/uploads
 email:
   subject: "Assunto Padrão"
   message: "Mensagem Padrão"
