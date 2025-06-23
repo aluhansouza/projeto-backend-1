@@ -35,7 +35,7 @@ public class FileController implements FileControllerDocs {
 
         // http://localhost:8080/api/file/v1/downloadFile/filename.docx
         var fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/v1/file/downloadFile/")
+                .path("/projeto/uploads/")
                 .path(fileName)
                 .toUriString();
 
@@ -72,6 +72,19 @@ public class FileController implements FileControllerDocs {
                 HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + resource.getFilename() + "\"")
             .body(resource);
+    }
+
+    @Override
+    public UploadFileResponseDTO uploadFileMateriais(MultipartFile file) {
+        var fileName = service.storeFile(file);
+
+        // http://localhost:8080/api/file/v1/downloadFile/filename.docx
+        var fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/projeto/uploads/materiais")
+                .path(fileName)
+                .toUriString();
+
+        return new UploadFileResponseDTO(fileName, fileDownloadUri, file.getContentType(), file.getSize());
     }
 
 

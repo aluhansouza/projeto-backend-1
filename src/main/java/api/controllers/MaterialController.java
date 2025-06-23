@@ -5,6 +5,7 @@ import api.dto.request.MaterialRequestDTO;
 import api.dto.response.MaterialResponseDTO;
 import api.file.exporter.MediaTypes;
 import api.services.interfaces.MaterialService;
+import api.services.utils.FileStorageService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -35,6 +36,9 @@ public class MaterialController implements MaterialControllerDocs {
 
     @Autowired
     private MaterialService materialService;
+
+    @Autowired
+    private FileStorageService serviceStorage;
 
 
     @GetMapping(produces = {
@@ -83,16 +87,19 @@ public class MaterialController implements MaterialControllerDocs {
 
 
     @PostMapping(
-            
+            consumes =  {MediaType.MULTIPART_FORM_DATA_VALUE}
+            ,
             produces = {
                     MediaType.APPLICATION_JSON_VALUE,
                     MediaType.APPLICATION_XML_VALUE,
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public MaterialResponseDTO cadastrar(@RequestPart("material") @Valid MaterialRequestDTO materialRequestDTO,
-                                           @RequestPart(value = "file", required = false) MultipartFile file) {
-        return materialService.cadastrar(materialRequestDTO, file);
+    public MaterialResponseDTO cadastrar(@RequestPart("material") MaterialRequestDTO materialRequestDTO,
+                                         @RequestPart(value = "imagem", required = false) MultipartFile imagem) {
+
+
+        return materialService.cadastrar(materialRequestDTO, imagem);
     }
 
     @PutMapping(
@@ -106,8 +113,9 @@ public class MaterialController implements MaterialControllerDocs {
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public MaterialResponseDTO atualizar(@RequestBody MaterialRequestDTO materialRequestDTO) {
-        return materialService.atualizar(materialRequestDTO);
+    public MaterialResponseDTO atualizar(@RequestPart("material") @Valid MaterialRequestDTO materialRequestDTO,
+                                         @RequestPart(value="file") MultipartFile file) {
+        return materialService.atualizar(materialRequestDTO, file);
     }
 
 

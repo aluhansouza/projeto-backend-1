@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface MaterialControllerDocs {
 
     @Operation(summary = "Método Listar",
             description = "Método Listar",
-            tags = {"Equipamentos"},
+            tags = {"Materiais"},
             responses = {
                     @ApiResponse(
                             description = "Success",
@@ -52,7 +53,7 @@ public interface MaterialControllerDocs {
 
     @Operation(summary = "Método Buscar por Nome",
             description = "Método Buscar por Nome",
-            tags = {"Equipamentos"},
+            tags = {"Materiais"},
             responses = {
                     @ApiResponse(
                             description = "Success",
@@ -80,7 +81,7 @@ public interface MaterialControllerDocs {
 
     @Operation(summary = "Método Buscar por Id",
             description = "Método Buscar por Id",
-            tags = {"Equipamentos"},
+            tags = {"Materiais"},
             responses = {
                     @ApiResponse(
                             description = "Success",
@@ -98,7 +99,7 @@ public interface MaterialControllerDocs {
 
     @Operation(summary = "Método Cadastrar",
             description = "\"Método Cadastrar",
-            tags = {"Equipamentos"},
+            tags = {"Materiais"},
             responses = {
                     @ApiResponse(
                             description = "Success",
@@ -110,11 +111,11 @@ public interface MaterialControllerDocs {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    MaterialResponseDTO cadastrar(@RequestBody MaterialRequestDTO materialRequestDTO, MultipartFile file);
+    MaterialResponseDTO cadastrar(@RequestPart("material") MaterialRequestDTO materialRequestDTO, @RequestPart(value = "imagem", required = false) MultipartFile imagem);
 
     @Operation(summary = "Método Atualizar",
             description = "Método Atualizar",
-            tags = {"Equipamentos"},
+            tags = {"Materiais"},
             responses = {
                     @ApiResponse(
                             description = "Success",
@@ -128,11 +129,11 @@ public interface MaterialControllerDocs {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    MaterialResponseDTO atualizar(@RequestBody MaterialRequestDTO MaterialRequestDTO);
+    MaterialResponseDTO atualizar(@RequestBody MaterialRequestDTO MaterialRequestDTO, MultipartFile file);
 
     @Operation(summary = "Método Excluir",
             description = "Método Excluir",
-            tags = {"Equipamentos"},
+            tags = {"Materiais"},
             responses = {
                     @ApiResponse(
                             description = "No Content",

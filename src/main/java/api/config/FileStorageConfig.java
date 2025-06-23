@@ -11,13 +11,20 @@ public class FileStorageConfig {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    @Value("/projeto/uploads/materiais/")
+    private String uploadDirMateriais;
+
     public FileStorageConfig() {}
 
     public String getUploadDir() {
-        return uploadDir;
+        return uploadDirMateriais;
     }
 
-    public void setUploadDir(String uploadDir) {
-        this.uploadDir = uploadDir;
+    public String getUploadDirMateriais() {
+        return uploadDirMateriais;
+    }
+
+    public void setUploadDir(String uploadDirMateriais) {
+        this.uploadDirMateriais = uploadDirMateriais;
     }
 }

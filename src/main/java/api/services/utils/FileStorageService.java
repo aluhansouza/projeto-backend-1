@@ -26,12 +26,13 @@ public class FileStorageService {
 
     @Autowired
     public FileStorageService(FileStorageConfig fileStorageConfig) {
-        Path path = Paths.get(fileStorageConfig.getUploadDir()).toAbsolutePath()
+        Path path = Paths.get(fileStorageConfig.getUploadDirMateriais()).toAbsolutePath()
                 .toAbsolutePath().normalize();
 
         this.fileStorageLocation = path;
+        System.out.println("Testando Construtor:"+fileStorageLocation);
         try {
-            logger.info("Creating Directories");
+            logger.info("Criando Diretórios");
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception e) {
             logger.error("Could not create the directory where files will be stored!");
@@ -43,6 +44,7 @@ public class FileStorageService {
 
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
+
         try {
             if (fileName.contains("..")) {
                 logger.error("Sorry! Filename Contains a Invalid path Sequence " + fileName);
@@ -52,6 +54,8 @@ public class FileStorageService {
             logger.info("Saving file in Disk");
 
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            //Path targetLocation = this.fileStorageLocation.resolve("Teste"+fileName);
+            System.out.println("Localizacao da pasta: "+targetLocation);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return fileName;
         } catch (Exception e) {

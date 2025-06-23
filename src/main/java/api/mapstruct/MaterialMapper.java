@@ -24,8 +24,7 @@ public interface MaterialMapper {
     @Mappings({
             @Mapping(source = "categoria.id", target = "categoriaId"),
             @Mapping(source = "setor.id", target = "setorId"),
-            @Mapping(source = "origem.id", target = "origemId"),
-            @Mapping(source = "imagemUrl", target = "imagemUrl")
+            @Mapping(source = "origem.id", target = "origemId")
     })
     MaterialResponseDTO toResponse(Material entity);
 

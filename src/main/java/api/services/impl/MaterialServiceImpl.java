@@ -16,7 +16,6 @@ import api.mapstruct.MaterialMapper;
 import api.repository.MaterialRepository;
 import api.services.interfaces.MaterialService;
 import api.services.utils.FileStorageService;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +33,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +41,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class MaterialServiceImpl implements MaterialService {
-
 
 
     private final Logger logger = LoggerFactory.getLogger(MaterialServiceImpl.class);
@@ -142,7 +137,46 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     @Transactional
-    public MaterialResponseDTO cadastrar(MaterialRequestDTO dtoRequest, MultipartFile file) {
+    public MaterialResponseDTO cadastrar(MaterialRequestDTO dtoRequest, MultipartFile imagem) {
+        if (dtoRequest == null) throw new RequiredObjectIsNullException();
+        logger.info("Criando novo Material: nome='{}'", dtoRequest.getNome());
+
+
+        // 1) persiste sem imagem para gerar o ID
+        Material entity = materialMapper.toEntity(dtoRequest);
+        Material saved = materialRepository.save(entity);
+
+        if(imagem != null){
+            String nomeArquivo = storageService.storeFile(imagem);
+            String urlImagem = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/projeto/uploads/materiais/")
+                    .path(nomeArquivo)
+                    .toUriString();
+            entity.setImagemUrl(urlImagem);
+            System.out.println(urlImagem);
+            System.out.println("Nome do Arquivo no dentro do metodo Service: "+nomeArquivo);
+            saved = materialRepository.save(entity);
+        }
+
+
+
+        // 3) QR code (mantém sua lógica atual)
+        String qrUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/api/v1/materiais/{id}")
+                .buildAndExpand(saved.getId())
+                .toUriString();
+        saved.setQrValor(qrUrl);
+        saved = materialRepository.save(saved);
+
+        // 4) retorno
+        MaterialResponseDTO response = materialMapper.toResponse(saved);
+        addHateoasLinks(response);
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public MaterialResponseDTO atualizar(MaterialRequestDTO dtoRequest, MultipartFile file) {
         if (dtoRequest == null) throw new RequiredObjectIsNullException();
         logger.info("Criando novo Material: nome='{}'", dtoRequest.getNome());
 
@@ -150,18 +184,18 @@ public class MaterialServiceImpl implements MaterialService {
         Material entity = materialMapper.toEntity(dtoRequest);
         Material saved = materialRepository.save(entity);
 
-        // 2) se vier arquivo, usa o FileStorageService
+        /*// 2) se vier arquivo, usa o FileStorageService
         if (file != null && !file.isEmpty()) {
-            String filename = storageService.storeFile(file);
+            String nomeArquivo = storageService.storeFile(file);
             // monta URL pública para download
-            String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/uploads/materials/")
-                    .path(filename)
+            String arquivoUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/projeto/uploads/materiais/")
+                    .path(nomeArquivo)
                     .toUriString();
 
-            saved.setImagemUrl(fileUrl);
+            saved.setImagemUrl(arquivoUrl);
             saved = materialRepository.save(saved);
-        }
+        }*/
 
         // 3) QR code (mantém sua lógica atual)
         String qrUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -343,13 +377,13 @@ public class MaterialServiceImpl implements MaterialService {
 
         // 4. Create
         dto.add(linkTo(methodOn(MaterialController.class)
-                .cadastrar(null,null))
+                .cadastrar(null, null))
                 .withRel("cadastrar")
                 .withType("POST"));
 
         // 5. Update
         dto.add(linkTo(methodOn(MaterialController.class)
-                .atualizar(null))
+                .atualizar(null, null))
                 .withRel("atualizar")
                 .withType("PUT"));
 
