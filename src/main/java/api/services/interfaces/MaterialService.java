@@ -22,7 +22,7 @@ public interface MaterialService {
 
     MaterialResponseDTO cadastrar(MaterialRequestDTO dtoRequest, MultipartFile imagem);
 
-    MaterialResponseDTO atualizar(MaterialRequestDTO materialRequestDTO, MultipartFile file);
+    MaterialResponseDTO atualizar(Long id,MaterialRequestDTO materialRequestDTO, MultipartFile imagem);
 
     void excluir(Long id);
 

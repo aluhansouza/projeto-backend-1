@@ -13,6 +13,7 @@ import api.mapstruct.MaterialMapper;
 import api.repository.MaterialRepository;
 import api.services.interfaces.MaterialService;
 import api.services.utils.FileStorageService;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -185,40 +185,53 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     @Transactional
-    public MaterialResponseDTO atualizar(MaterialRequestDTO dtoRequest, MultipartFile file) {
+    public MaterialResponseDTO atualizar(Long id, MaterialRequestDTO dtoRequest, MultipartFile imagem) {
         if (dtoRequest == null) throw new RequiredObjectIsNullException();
-        logger.info("Criando novo Material: nome='{}'", dtoRequest.getNome());
+        logger.info("Atualizando Material: id='{}', nome='{}'", id, dtoRequest.getNome());
 
-        // 1) persiste sem imagem para gerar o ID
-        Material entity = materialMapper.toEntity(dtoRequest);
-        Material saved = materialRepository.save(entity);
+        // 1) Buscar a entidade Material no banco de dados
+        Material entity = materialRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Material não encontrado com id: " + id));
 
-        /*// 2) se vier arquivo, usa o FileStorageService
-        if (file != null && !file.isEmpty()) {
-            String nomeArquivo = storageService.storeFile(file);
-            // monta URL pública para download
+        // 2) Atualiza os dados da entidade com as informações do DTO
+        // Aqui você chama o método correto de atualização, que é `updateFromRequest`
+        materialMapper.updateFromRequest(dtoRequest, entity); // Atualiza os dados da entidade com o DTO
+
+        // 3) Processar a imagem (se fornecida)
+        if (imagem != null && !imagem.isEmpty()) {
+            // Remover o arquivo antigo se houver
+            if (entity.getImagemUrl() != null) {
+                String oldFileName = entity.getImagemUrl().substring(entity.getImagemUrl().lastIndexOf("/") + 1);
+                storageService.deleteFile(oldFileName, "materiais");  // Remover o arquivo anterior
+            }
+
+            // Armazenar o novo arquivo
+            String nomeArquivo = storageService.storeFile(imagem, "materiais");
             String arquivoUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/projeto/uploads/materiais/")
+                    .path("/api/v1/file/downloadFile/materiais/")
                     .path(nomeArquivo)
                     .toUriString();
 
-            saved.setImagemUrl(arquivoUrl);
-            saved = materialRepository.save(saved);
-        }*/
+            // Atualizar a URL da imagem
+            entity.setImagemUrl(arquivoUrl);
+        }
 
-        // 3) QR code (mantém sua lógica atual)
+        // 4) Gerar o QR Code
         String qrUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/v1/materiais/{id}")
-                .buildAndExpand(saved.getId())
+                .buildAndExpand(entity.getId())
                 .toUriString();
-        saved.setQrValor(qrUrl);
-        saved = materialRepository.save(saved);
+        entity.setQrValor(qrUrl);
 
-        // 4) retorno
-        MaterialResponseDTO response = materialMapper.toResponse(saved);
-        addHateoasLinks(response);
+        // 5) Salvar a entidade atualizada no banco de dados
+        Material updated = materialRepository.save(entity);
+
+        // 6) Retornar a resposta com os dados atualizados
+        MaterialResponseDTO response = materialMapper.toResponse(updated);
+        addHateoasLinks(response);  // Adiciona os links HATEOAS ao DTO
         return response;
     }
+
 
     @Override
     @Transactional
@@ -392,7 +405,7 @@ public class MaterialServiceImpl implements MaterialService {
 
         // 5. Update
         dto.add(linkTo(methodOn(MaterialController.class)
-                .atualizar(null, null))
+                .atualizar(null,null, null))
                 .withRel("atualizar")
                 .withType("PUT"));
 

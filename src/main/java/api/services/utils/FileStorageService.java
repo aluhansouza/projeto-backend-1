@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -95,6 +96,16 @@ public class FileStorageService {
         } catch (Exception e) {
             logger.error("File not found " + fileName);
             throw new FileNotFoundException("File not found " + fileName, e);
+        }
+    }
+
+    public void deleteFile(String fileName, String subDirectory) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(subDirectory).resolve(fileName).normalize();
+            Files.deleteIfExists(filePath);  // Deleta o arquivo, se ele existir
+        } catch (IOException e) {
+            logger.error("Erro ao excluir o arquivo: " + fileName);
+            throw new FileStorageException("Erro ao excluir o arquivo " + fileName, e);
         }
     }
 

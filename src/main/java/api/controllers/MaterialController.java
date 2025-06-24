@@ -103,19 +103,21 @@ public class MaterialController implements MaterialControllerDocs {
     }
 
     @PutMapping(
-            consumes = {
-                    MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.APPLICATION_XML_VALUE,
-                    MediaType.APPLICATION_YAML_VALUE},
+            value = "/{id}",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {
                     MediaType.APPLICATION_JSON_VALUE,
                     MediaType.APPLICATION_XML_VALUE,
                     MediaType.APPLICATION_YAML_VALUE}
     )
     @Override
-    public MaterialResponseDTO atualizar(@RequestPart("material") @Valid MaterialRequestDTO materialRequestDTO,
-                                         @RequestPart(value="file") MultipartFile file) {
-        return materialService.atualizar(materialRequestDTO, file);
+    public MaterialResponseDTO atualizar(
+            @PathVariable Long id,  // O ID será passado como parâmetro de URL
+            @RequestPart("material") MaterialRequestDTO dtoRequest,  // O DTO com os dados atualizados
+            @RequestPart(value = "imagem", required = false) MultipartFile imagem  // O arquivo de imagem, opcional
+    ) {
+        // Chama o serviço para atualizar o material e retorna o DTO de resposta
+        return materialService.atualizar(id, dtoRequest, imagem);
     }
 
 
