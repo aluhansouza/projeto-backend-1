@@ -15,83 +15,87 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/file")
-public class FileController implements FileControllerDocs {
+public class FileController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileController.class);
 
     @Autowired
-    private FileStorageService service;
+    private FileStorageService fileStorageService;
 
+    /**
+     * Endpoint para fazer upload de um único arquivo
+     */
     @PostMapping("/uploadFile")
-    @Override
-    public UploadFileResponseDTO uploadFile(@RequestParam("file") MultipartFile file) {
-        var fileName = service.storeFile(file);
+    public UploadFileResponseDTO uploadFile(@RequestParam("file") MultipartFile file,
+                                            @RequestParam(value = "subDirectory", defaultValue = "default") String subDirectory) {
 
-        // http://localhost:8080/api/file/v1/downloadFile/filename.docx
-        var fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/projeto/uploads/")
+        // Armazenar o arquivo na subpasta especificada
+        String fileName = fileStorageService.storeFile(file, subDirectory);
+
+        // Gerar a URL de download do arquivo
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/api/v1/file/downloadFile/")
                 .path(fileName)
                 .toUriString();
 
         return new UploadFileResponseDTO(fileName, fileDownloadUri, file.getContentType(), file.getSize());
     }
 
+    /**
+     * Endpoint para fazer upload de múltiplos arquivos
+     */
     @PostMapping("/uploadMultipleFiles")
-    @Override
-    public List<UploadFileResponseDTO> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
-        return Arrays.asList(files)
-                .stream()
-                .map(file -> uploadFile(file))
+    public List<UploadFileResponseDTO> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,
+                                                           @RequestParam(value = "subDirectory", defaultValue = "default") String subDirectory) {
+        return Arrays.stream(files)
+                .map(file -> uploadFile(file, subDirectory))
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/downloadFile/{fileName:.+}")
-    @Override
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
-        Resource resource = service.loadFileAsResource(fileName);
+    /**
+     * Endpoint para fazer download de um arquivo específico
+     */
+    @GetMapping("/downloadFile/{subDirectory}/{fileName:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String subDirectory, @PathVariable String fileName, HttpServletRequest request) {
+        // Carregar o arquivo como recurso, passando o subdiretório
+        Resource resource = fileStorageService.loadFileAsResource(fileName, subDirectory);
+
+        // Determinar o tipo MIME do arquivo
+        String contentType = getContentType(resource, request);
+
+        // Preparar e retornar a resposta com o arquivo para download
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+    /**
+     * Endpoint para obter o caminho de upload configurado
+     */
+    @GetMapping("/upload-path")
+    public String getUploadPath() {
+        return fileStorageService.getUploadDirectoryPath();
+    }
+
+    /**
+     * Método auxiliar para determinar o tipo MIME do arquivo
+     */
+    private String getContentType(Resource resource, HttpServletRequest request) {
         String contentType = null;
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (Exception e) {
-            logger.error("Could not determine file type!");
+        } catch (IOException e) {
+            logger.error("Could not determine file type for file: " + resource.getFilename());
         }
 
-        if (contentType == null) {
-            contentType = "application/octet-stream";
-        }
-
-        return ResponseEntity.ok()
-            .contentType(MediaType.parseMediaType(contentType))
-            .header(
-                HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + resource.getFilename() + "\"")
-            .body(resource);
+        return contentType != null ? contentType : "application/octet-stream";
     }
-
-    @Override
-    public UploadFileResponseDTO uploadFileMateriais(MultipartFile file) {
-        var fileName = service.storeFile(file);
-
-        // http://localhost:8080/api/file/v1/downloadFile/filename.docx
-        var fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/projeto/uploads/materiais")
-                .path(fileName)
-                .toUriString();
-
-        return new UploadFileResponseDTO(fileName, fileDownloadUri, file.getContentType(), file.getSize());
-    }
-
-
-    @GetMapping("/upload-path")
-    public String getUploadPath() {
-        return service.getUploadDirectoryPath();
-    }
-
-
 }

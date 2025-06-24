@@ -4,10 +4,7 @@ import api.controllers.MaterialController;
 import api.dto.request.MaterialRequestDTO;
 import api.dto.response.MaterialResponseDTO;
 import api.entity.Material;
-import api.exceptions.BadRequestException;
-import api.exceptions.FileStorageException;
-import api.exceptions.RequiredObjectIsNullException;
-import api.exceptions.ResourceNotFoundException;
+import api.exceptions.*;
 import api.file.exporter.contract.MaterialExporter;
 import api.file.exporter.factory.FileExporterFactory;
 import api.file.importer.contract.MaterialImporter;
@@ -35,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -141,34 +139,45 @@ public class MaterialServiceImpl implements MaterialService {
         if (dtoRequest == null) throw new RequiredObjectIsNullException();
         logger.info("Criando novo Material: nome='{}'", dtoRequest.getNome());
 
+        // 1) Validação da imagem (se enviada)
+        if (imagem != null) {
+            String contentType = imagem.getContentType();
+            if (!contentType.startsWith("image/")) {
+                throw new InvalidImageTypeException("O arquivo enviado não é uma imagem.");
+            }
+        }
 
-        // 1) persiste sem imagem para gerar o ID
+        // 2) Persiste sem imagem para gerar o ID
         Material entity = materialMapper.toEntity(dtoRequest);
         Material saved = materialRepository.save(entity);
 
-        if(imagem != null){
-            String nomeArquivo = storageService.storeFile(imagem);
+        // 3) Armazenamento e link da imagem (se houver)
+        if (imagem != null) {
+            // Usando o método storeFile para a subpasta "materiais"
+            String nomeArquivo = storageService.storeFile(imagem, "materiais");  // Passando o nome da subpasta
             String urlImagem = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/projeto/uploads/materiais/")
+                    .path("/projeto/uploads/materiais/")  // Caminho correto com a subpasta
                     .path(nomeArquivo)
                     .toUriString();
+
             entity.setImagemUrl(urlImagem);
-            System.out.println(urlImagem);
-            System.out.println("Nome do Arquivo no dentro do metodo Service: "+nomeArquivo);
+            logger.info("Imagem armazenada com URL: {}", urlImagem);
+
+            // Re-salva a entidade com a URL da imagem
             saved = materialRepository.save(entity);
         }
 
-
-
-        // 3) QR code (mantém sua lógica atual)
+        // 4) QR code (mantém a lógica atual)
         String qrUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/v1/materiais/{id}")
                 .buildAndExpand(saved.getId())
                 .toUriString();
         saved.setQrValor(qrUrl);
+
+        // Re-salva a entidade com o QR code
         saved = materialRepository.save(saved);
 
-        // 4) retorno
+        // 5) Retorno
         MaterialResponseDTO response = materialMapper.toResponse(saved);
         addHateoasLinks(response);
         return response;

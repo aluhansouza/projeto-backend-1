@@ -16,23 +16,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Service
 public class FileStorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorageService.class);
-
     private final Path fileStorageLocation;
 
     @Autowired
     public FileStorageService(FileStorageConfig fileStorageConfig) {
-        Path path = Paths.get(fileStorageConfig.getUploadDirMateriais()).toAbsolutePath()
-                .toAbsolutePath().normalize();
-
+        Path path = Paths.get(fileStorageConfig.getUploadDirMateriais()).toAbsolutePath().normalize();
         this.fileStorageLocation = path;
-        System.out.println("Testando Construtor:"+fileStorageLocation);
         try {
-            logger.info("Criando Diretórios");
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception e) {
             logger.error("Could not create the directory where files will be stored!");
@@ -40,36 +36,58 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file) {
+    public String storeFile(MultipartFile file, String subDirectory) {
+        // Verificar se o subDirectory é válido
+        if (subDirectory == null || subDirectory.isEmpty() || subDirectory.contains("..")) {
+            subDirectory = "default"; // Define "default" como subdiretório padrão
+        }
 
+        // Normaliza o subdiretório e garante que ele seja válido
+        Path subDirectoryPath = this.fileStorageLocation.resolve(subDirectory).normalize();
+
+        // Garante que o subdiretório exista
+        try {
+            Files.createDirectories(subDirectoryPath);
+        } catch (Exception e) {
+            logger.error("Could not create the subdirectory: " + subDirectory);
+            throw new FileStorageException("Could not create the subdirectory: " + subDirectory, e);
+        }
+
+        // Gera um nome único para o arquivo
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-
+        String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
 
         try {
-            if (fileName.contains("..")) {
-                logger.error("Sorry! Filename Contains a Invalid path Sequence " + fileName);
-                throw new FileStorageException("Sorry! Filename Contains a Invalid path Sequence " + fileName);
+            if (uniqueFileName.contains("..")) {
+                logger.error("Invalid file path: " + uniqueFileName);
+                throw new FileStorageException("Invalid file path: " + uniqueFileName);
             }
 
             logger.info("Saving file in Disk");
-
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            //Path targetLocation = this.fileStorageLocation.resolve("Teste"+fileName);
-            System.out.println("Localizacao da pasta: "+targetLocation);
+            Path targetLocation = subDirectoryPath.resolve(uniqueFileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            return fileName;
+            return uniqueFileName;
         } catch (Exception e) {
-            logger.error("Could not store file " + fileName + ". Please try Again!");
-            throw new FileStorageException("Could not store file " + fileName + ". Please try Again!", e);
+            logger.error("Could not store file " + uniqueFileName + ". Please try Again!");
+            throw new FileStorageException("Could not store file " + uniqueFileName + ". Please try Again!", e);
         }
     }
 
-    public Resource loadFileAsResource(String fileName) {
+    public Resource loadFileAsResource(String fileName, String subDirectory) {
+        // Validação do subdiretório
+        if (subDirectory == null || subDirectory.isEmpty() || subDirectory.contains("..")) {
+            subDirectory = "default";  // Definir um valor padrão, caso o subdiretório seja inválido
+        }
+
         try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            // Resolver o caminho do arquivo incluindo o subdiretório
+            Path filePath = this.fileStorageLocation.resolve(subDirectory).resolve(fileName).normalize();
+
+            // Criar o recurso do arquivo
             Resource resource = new UrlResource(filePath.toUri());
+
             if (resource.exists()) {
-                return resource;
+                return resource;  // Retorna o recurso se o arquivo existir
             } else {
                 logger.error("File not found " + fileName);
                 throw new FileNotFoundException("File not found " + fileName);
@@ -83,7 +101,4 @@ public class FileStorageService {
     public String getUploadDirectoryPath() {
         return this.fileStorageLocation.toString();
     }
-
-
-
 }
