@@ -1,7 +1,10 @@
 package api.dto.response;
 
+import api.entity.Categoria;
 import api.entity.Material.Situacao;
 import api.entity.Material.TipoDepreciacao;
+import api.entity.Origem;
+import api.entity.Setor;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
@@ -52,73 +55,13 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
 
     private BigDecimal valorAtual;
 
+    private Categoria categoria;
+    private Setor setor;
+    private Origem origem;
+
+
     // Construtores
     public MaterialResponseDTO() {}
-
-    public MaterialResponseDTO(Long id, String nome, Situacao situacao, String patrimonio, String imagemUrl, Long categoriaId, Long setorId, Long origemId, String localizacaoFisica, LocalDate dataAquisicao, String descricao, BigDecimal valorCompra, String identificacaoRecibo, String qrValor, TipoDepreciacao tipoDepreciacao, BigDecimal percentualDepreciacao, Integer vidaUtilAnos, BigDecimal valorAtual) {
-        this.id = id;
-        this.nome = nome;
-        this.situacao = situacao;
-        this.patrimonio = patrimonio;
-        this.imagemUrl = imagemUrl;
-        this.categoriaId = categoriaId;
-        this.setorId = setorId;
-        this.origemId = origemId;
-        this.localizacaoFisica = localizacaoFisica;
-        this.dataAquisicao = dataAquisicao;
-        this.descricao = descricao;
-        this.valorCompra = valorCompra;
-        this.identificacaoRecibo = identificacaoRecibo;
-        this.qrValor = qrValor;
-        this.tipoDepreciacao = tipoDepreciacao;
-        this.percentualDepreciacao = percentualDepreciacao;
-        this.vidaUtilAnos = vidaUtilAnos;
-        this.valorAtual = valorAtual;
-    }
-
-    public MaterialResponseDTO(Link initialLink, Long id, String nome, Situacao situacao, String patrimonio, String imagemUrl, Long categoriaId, Long setorId, Long origemId, String localizacaoFisica, LocalDate dataAquisicao, String descricao, BigDecimal valorCompra, String identificacaoRecibo, String qrValor, TipoDepreciacao tipoDepreciacao, BigDecimal percentualDepreciacao, Integer vidaUtilAnos, BigDecimal valorAtual) {
-        super(initialLink);
-        this.id = id;
-        this.nome = nome;
-        this.situacao = situacao;
-        this.patrimonio = patrimonio;
-        this.imagemUrl = imagemUrl;
-        this.categoriaId = categoriaId;
-        this.setorId = setorId;
-        this.origemId = origemId;
-        this.localizacaoFisica = localizacaoFisica;
-        this.dataAquisicao = dataAquisicao;
-        this.descricao = descricao;
-        this.valorCompra = valorCompra;
-        this.identificacaoRecibo = identificacaoRecibo;
-        this.qrValor = qrValor;
-        this.tipoDepreciacao = tipoDepreciacao;
-        this.percentualDepreciacao = percentualDepreciacao;
-        this.vidaUtilAnos = vidaUtilAnos;
-        this.valorAtual = valorAtual;
-    }
-
-    public MaterialResponseDTO(Iterable<Link> initialLinks, Long id, String nome, Situacao situacao, String patrimonio, String imagemUrl, Long categoriaId, Long setorId, Long origemId, String localizacaoFisica, LocalDate dataAquisicao, String descricao, BigDecimal valorCompra, String identificacaoRecibo, String qrValor, TipoDepreciacao tipoDepreciacao, BigDecimal percentualDepreciacao, Integer vidaUtilAnos, BigDecimal valorAtual) {
-        super(initialLinks);
-        this.id = id;
-        this.nome = nome;
-        this.situacao = situacao;
-        this.patrimonio = patrimonio;
-        this.imagemUrl = imagemUrl;
-        this.categoriaId = categoriaId;
-        this.setorId = setorId;
-        this.origemId = origemId;
-        this.localizacaoFisica = localizacaoFisica;
-        this.dataAquisicao = dataAquisicao;
-        this.descricao = descricao;
-        this.valorCompra = valorCompra;
-        this.identificacaoRecibo = identificacaoRecibo;
-        this.qrValor = qrValor;
-        this.tipoDepreciacao = tipoDepreciacao;
-        this.percentualDepreciacao = percentualDepreciacao;
-        this.vidaUtilAnos = vidaUtilAnos;
-        this.valorAtual = valorAtual;
-    }
 
     public Long getId() {
         return id;
@@ -264,17 +207,41 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
         this.valorAtual = valorAtual;
     }
 
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public Setor getSetor() {
+        return setor;
+    }
+
+    public void setSetor(Setor setor) {
+        this.setor = setor;
+    }
+
+    public Origem getOrigem() {
+        return origem;
+    }
+
+    public void setOrigem(Origem origem) {
+        this.origem = origem;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         MaterialResponseDTO that = (MaterialResponseDTO) o;
-        return Objects.equals(id, that.id) && Objects.equals(nome, that.nome) && situacao == that.situacao && Objects.equals(patrimonio, that.patrimonio) && Objects.equals(imagemUrl, that.imagemUrl) && Objects.equals(categoriaId, that.categoriaId) && Objects.equals(setorId, that.setorId) && Objects.equals(origemId, that.origemId) && Objects.equals(localizacaoFisica, that.localizacaoFisica) && Objects.equals(dataAquisicao, that.dataAquisicao) && Objects.equals(descricao, that.descricao) && Objects.equals(valorCompra, that.valorCompra) && Objects.equals(identificacaoRecibo, that.identificacaoRecibo) && Objects.equals(qrValor, that.qrValor) && tipoDepreciacao == that.tipoDepreciacao && Objects.equals(percentualDepreciacao, that.percentualDepreciacao) && Objects.equals(vidaUtilAnos, that.vidaUtilAnos) && Objects.equals(valorAtual, that.valorAtual);
+        return Objects.equals(id, that.id) && Objects.equals(nome, that.nome) && situacao == that.situacao && Objects.equals(patrimonio, that.patrimonio) && Objects.equals(imagemUrl, that.imagemUrl) && Objects.equals(categoriaId, that.categoriaId) && Objects.equals(setorId, that.setorId) && Objects.equals(origemId, that.origemId) && Objects.equals(localizacaoFisica, that.localizacaoFisica) && Objects.equals(dataAquisicao, that.dataAquisicao) && Objects.equals(descricao, that.descricao) && Objects.equals(valorCompra, that.valorCompra) && Objects.equals(identificacaoRecibo, that.identificacaoRecibo) && Objects.equals(qrValor, that.qrValor) && tipoDepreciacao == that.tipoDepreciacao && Objects.equals(percentualDepreciacao, that.percentualDepreciacao) && Objects.equals(vidaUtilAnos, that.vidaUtilAnos) && Objects.equals(valorAtual, that.valorAtual) && Objects.equals(categoria, that.categoria) && Objects.equals(setor, that.setor) && Objects.equals(origem, that.origem);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, imagemUrl, categoriaId, setorId, origemId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
+        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, imagemUrl, categoriaId, setorId, origemId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual, categoria, setor, origem);
     }
 
     @Override
@@ -298,6 +265,9 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
                 ", percentualDepreciacao=" + percentualDepreciacao +
                 ", vidaUtilAnos=" + vidaUtilAnos +
                 ", valorAtual=" + valorAtual +
+                ", categoria=" + categoria +
+                ", setor=" + setor +
+                ", origem=" + origem +
                 '}';
     }
 }

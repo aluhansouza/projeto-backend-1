@@ -202,5 +202,10 @@ public class MaterialController implements MaterialControllerDocs {
                 .body(file);
     }
 
+    @GetMapping("/verificar-conexao")
+    public ResponseEntity<String> verificarConexao() {
+        return ResponseEntity.ok("Conexão bem-sucedida");
+    }
+
 
 }
