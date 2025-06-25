@@ -16,9 +16,9 @@ public interface MaterialMapper {
 
     // Mapeamento do DTO para a Entidade Material
     @Mappings({
-            @Mapping(source = "categoriaId", target = "categoria"),  // Mapeia categoriaId para o objeto Categoria
-            @Mapping(source = "setorId", target = "setor"),          // Mapeia setorId para o objeto Setor
-            @Mapping(source = "origemId", target = "origem")          // Mapeia origemId para o objeto Origem
+            @Mapping(source = "categoriaId", target = "categoria"),
+            @Mapping(source = "setorId", target = "setor"),
+            @Mapping(source = "origemId", target = "origem")
     })
     Material toEntity(MaterialRequestDTO dto);
 
