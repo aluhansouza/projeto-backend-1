@@ -1,5 +1,5 @@
 cors:
-  originPatterns: http://localhost:8080,http://localhost:3000,https://www.google.com.br
+  originPatterns: http://localhost:8080,http://localhost:4200,https://www.google.com.br
 file:
   upload-dir: /projeto/uploads
 email:
