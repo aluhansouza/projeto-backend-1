@@ -36,7 +36,7 @@ public class OrigemController implements OrigemControllerDocs {
     @Override
     public ResponseEntity<PagedModel<EntityModel<OrigemResponseDTO>>> listar(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "12") Integer size,
+            @RequestParam(value = "size", defaultValue = "200000000") Integer size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction
     ) {
         Direction sortDirection = "desc".equalsIgnoreCase(direction) ? Direction.DESC : Direction.ASC;
@@ -52,7 +52,7 @@ public class OrigemController implements OrigemControllerDocs {
     public ResponseEntity<PagedModel<EntityModel<OrigemResponseDTO>>> buscarPorNome(
             @PathVariable("nome") String nome,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "12") Integer size,
+            @RequestParam(value = "size", defaultValue = "200000000") Integer size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction
     ) {
         Direction sortDirection = "desc".equalsIgnoreCase(direction) ? Direction.DESC : Direction.ASC;

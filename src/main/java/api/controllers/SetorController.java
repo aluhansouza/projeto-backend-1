@@ -32,7 +32,7 @@ public class SetorController implements SetorControllerDocs {
     @Override
     public ResponseEntity<PagedModel<EntityModel<SetorResponseDTO>>> listar(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "12") Integer size,
+            @RequestParam(value = "size", defaultValue = "200000000") Integer size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction
     ) {
         Direction sortDirection = "desc".equalsIgnoreCase(direction) ? Direction.DESC : Direction.ASC;
@@ -48,7 +48,7 @@ public class SetorController implements SetorControllerDocs {
     public ResponseEntity<PagedModel<EntityModel<SetorResponseDTO>>> buscarPorNome(
             @PathVariable("nome") String nome,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "12") Integer size,
+            @RequestParam(value = "size", defaultValue = "200000000") Integer size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction
     ) {
         Direction sortDirection = "desc".equalsIgnoreCase(direction) ? Direction.DESC : Direction.ASC;

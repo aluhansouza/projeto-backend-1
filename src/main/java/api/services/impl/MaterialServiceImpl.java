@@ -152,13 +152,25 @@ public class MaterialServiceImpl implements MaterialService {
         Material saved = materialRepository.save(entity);
 
         // 3) Armazenamento e link da imagem (se houver)
-        if (imagem != null) {
+        /*if (imagem != null) {
             // Usando o método storeFile para a subpasta "materiais"
             String nomeArquivo = storageService.storeFile(imagem, "materiais");  // Passando o nome da subpasta
             String urlImagem = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/projeto/uploads/materiais/")  // Caminho correto com a subpasta
                     .path(nomeArquivo)
-                    .toUriString();
+                    .toUriString();*/
+
+        if (imagem != null) {
+            // Usando o método storeFile para a subpasta "materiais"
+            String nomeArquivo = storageService.storeFile(imagem, "materiais");  // Passando o nome da subpasta
+            String urlImagem = ServletUriComponentsBuilder.fromHttpUrl("http://10.10.0.154:8080")
+            //String urlImagem = ServletUriComponentsBuilder.fromCurrentContextPath()
+        .path("/api/v1/materiais/imagem/")
+        .path(nomeArquivo)
+        .toUriString();
+
+
+
 
             entity.setImagemUrl(urlImagem);
             logger.info("Imagem armazenada com URL: {}", urlImagem);
@@ -168,10 +180,18 @@ public class MaterialServiceImpl implements MaterialService {
         }
 
         // 4) QR code (mantém a lógica atual)
-        String qrUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+       /* String qrUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/v1/materiais/{id}")
                 .buildAndExpand(saved.getId())
-                .toUriString();
+                .toUriString();*/
+
+        String qrUrl = ServletUriComponentsBuilder.fromHttpUrl("http://10.10.0.55:4200")
+                        .path("/recursos/materiais/?editar={id}")
+
+                                .buildAndExpand(saved.getId())
+                                        .toUriString();
+
+
         saved.setQrValor(qrUrl);
 
         // Re-salva a entidade com o QR code
@@ -207,10 +227,12 @@ public class MaterialServiceImpl implements MaterialService {
 
             // Armazenar o novo arquivo
             String nomeArquivo = storageService.storeFile(imagem, "materiais");
-            String arquivoUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/api/v1/file/downloadFile/materiais/")
-                    .path(nomeArquivo)
-                    .toUriString();
+            String arquivoUrl = ServletUriComponentsBuilder.fromHttpUrl("http://10.10.0.154:8080")
+            //String arquivoUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+        .path("/api/v1/materiais/imagem/")
+        .path(nomeArquivo)
+        .toUriString();
+
 
             // Atualizar a URL da imagem
             entity.setImagemUrl(arquivoUrl);

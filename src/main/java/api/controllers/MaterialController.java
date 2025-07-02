@@ -48,7 +48,7 @@ public class MaterialController implements MaterialControllerDocs {
     @Override
     public ResponseEntity<PagedModel<EntityModel<MaterialResponseDTO>>> listar(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "12") Integer size,
+            @RequestParam(value = "size", defaultValue = "200000000") Integer size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction
     ) {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Direction.DESC : Direction.ASC;
@@ -65,7 +65,7 @@ public class MaterialController implements MaterialControllerDocs {
     public ResponseEntity<PagedModel<EntityModel<MaterialResponseDTO>>> buscarPorNome(
             @PathVariable("nome") String nome,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "12") Integer size,
+            @RequestParam(value = "size", defaultValue = "200000000") Integer size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction
     ) {
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Direction.DESC : Direction.ASC;
@@ -206,6 +206,30 @@ public class MaterialController implements MaterialControllerDocs {
     public ResponseEntity<String> verificarConexao() {
         return ResponseEntity.ok("Conexão bem-sucedida");
     }
+
+
+
+
+
+
+@GetMapping("/imagem/{nomeArquivo:.+}")
+public ResponseEntity<Resource> servirImagem(@PathVariable String nomeArquivo, HttpServletRequest request) {
+    // Carrega o arquivo da pasta "materiais"
+    Resource resource = serviceStorage.loadFileAsResource(nomeArquivo, "materiais");
+
+    // Tenta determinar o tipo do conteúdo
+    String contentType = request.getServletContext().getMimeType(resource.getFilename());
+    if (contentType == null) {
+        contentType = "application/octet-stream";
+    }
+
+    return ResponseEntity.ok()
+            .contentType(MediaType.parseMediaType(contentType))
+            .body(resource);
+}
+
+
+
 
 
 }
