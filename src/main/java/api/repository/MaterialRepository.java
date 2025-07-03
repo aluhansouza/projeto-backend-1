@@ -17,10 +17,10 @@ public interface MaterialRepository extends JpaRepository<Material, Long> {
     Page<Material> buscarPorNome(@Param("nome") String nome, Pageable pageable);
 
     // Usando EntityGraph para buscar as entidades associadas
-    @EntityGraph(attributePaths = {"setor", "categoria", "origem"})
+    @EntityGraph(attributePaths = {"setor", "marca", "categoria", "origem"})
     List<Material> findAll();
 
-    @EntityGraph(attributePaths = {"setor", "categoria", "origem"})
+    @EntityGraph(attributePaths = {"setor", "marca", "categoria", "origem"})
     Page<Material> findAll(Pageable pageable);
 
 

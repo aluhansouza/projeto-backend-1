@@ -5,6 +5,7 @@ import api.entity.Material.Situacao;
 import api.entity.Material.TipoDepreciacao;
 import api.entity.Origem;
 import api.entity.Setor;
+import api.entity.Marca;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
@@ -27,11 +28,17 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
 
     private String patrimonio;
 
+    private String numserie;
+
+    private String modelo;
+
     private String imagemUrl;
 
     private Long categoriaId;
 
     private Long setorId;
+
+    private Long marcaId;
 
     private Long origemId;
 
@@ -57,6 +64,7 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
 
     private Categoria categoria;
     private Setor setor;
+    private Marca marca;
     private Origem origem;
 
 
@@ -95,6 +103,22 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
         this.patrimonio = patrimonio;
     }
 
+    public String getNumSerie() {
+        return numserie;
+    }
+
+    public void setNumSerie(String numserie) {
+        this.numserie = numserie;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
     public String getImagemUrl() {
         return imagemUrl;
     }
@@ -117,6 +141,14 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
 
     public void setSetorId(Long setorId) {
         this.setorId = setorId;
+    }
+
+    public Long getMarcaId() {
+        return marcaId;
+    }
+
+    public void setMarcaId(Long marcaId) {
+        this.marcaId = marcaId;
     }
 
     public Long getOrigemId() {
@@ -223,6 +255,14 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
         this.setor = setor;
     }
 
+    public Marca getMarca() {
+        return marca;
+    }
+
+    public void setMarca(Marca marca) {
+        this.marca = marca;
+    }
+
     public Origem getOrigem() {
         return origem;
     }
@@ -236,12 +276,12 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         MaterialResponseDTO that = (MaterialResponseDTO) o;
-        return Objects.equals(id, that.id) && Objects.equals(nome, that.nome) && situacao == that.situacao && Objects.equals(patrimonio, that.patrimonio) && Objects.equals(imagemUrl, that.imagemUrl) && Objects.equals(categoriaId, that.categoriaId) && Objects.equals(setorId, that.setorId) && Objects.equals(origemId, that.origemId) && Objects.equals(localizacaoFisica, that.localizacaoFisica) && Objects.equals(dataAquisicao, that.dataAquisicao) && Objects.equals(descricao, that.descricao) && Objects.equals(valorCompra, that.valorCompra) && Objects.equals(identificacaoRecibo, that.identificacaoRecibo) && Objects.equals(qrValor, that.qrValor) && tipoDepreciacao == that.tipoDepreciacao && Objects.equals(percentualDepreciacao, that.percentualDepreciacao) && Objects.equals(vidaUtilAnos, that.vidaUtilAnos) && Objects.equals(valorAtual, that.valorAtual) && Objects.equals(categoria, that.categoria) && Objects.equals(setor, that.setor) && Objects.equals(origem, that.origem);
+        return Objects.equals(id, that.id) && Objects.equals(nome, that.nome) && situacao == that.situacao && Objects.equals(patrimonio, that.patrimonio) && Objects.equals(numserie, that.numserie) && Objects.equals(modelo, that.modelo) && Objects.equals(imagemUrl, that.imagemUrl) && Objects.equals(categoriaId, that.categoriaId) && Objects.equals(setorId, that.setorId) && Objects.equals(marcaId, that.marcaId) && Objects.equals(origemId, that.origemId) && Objects.equals(localizacaoFisica, that.localizacaoFisica) && Objects.equals(dataAquisicao, that.dataAquisicao) && Objects.equals(descricao, that.descricao) && Objects.equals(valorCompra, that.valorCompra) && Objects.equals(identificacaoRecibo, that.identificacaoRecibo) && Objects.equals(qrValor, that.qrValor) && tipoDepreciacao == that.tipoDepreciacao && Objects.equals(percentualDepreciacao, that.percentualDepreciacao) && Objects.equals(vidaUtilAnos, that.vidaUtilAnos) && Objects.equals(valorAtual, that.valorAtual) && Objects.equals(categoria, that.categoria) && Objects.equals(setor, that.setor) && Objects.equals(marca, that.marca) && Objects.equals(origem, that.origem);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio, imagemUrl, categoriaId, setorId, origemId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual, categoria, setor, origem);
+        return Objects.hash(super.hashCode(), id, nome, situacao, patrimonio,  numserie,  modelo, imagemUrl, categoriaId, setorId, marcaId, origemId, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual, categoria, setor, marca, origem);
     }
 
     @Override
@@ -251,9 +291,12 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
                 ", nome='" + nome + '\'' +
                 ", situacao=" + situacao +
                 ", patrimonio='" + patrimonio + '\'' +
+                ", numserie='" + numserie + '\'' +
+                ", modelo='" + modelo + '\'' +
                 ", imagemUrl='" + imagemUrl + '\'' +
                 ", categoriaId=" + categoriaId +
                 ", setorId=" + setorId +
+                ", marcaId=" + marcaId +
                 ", origemId=" + origemId +
                 ", localizacaoFisica='" + localizacaoFisica + '\'' +
                 ", dataAquisicao=" + dataAquisicao +
@@ -267,6 +310,7 @@ public class MaterialResponseDTO extends RepresentationModel<MaterialResponseDTO
                 ", valorAtual=" + valorAtual +
                 ", categoria=" + categoria +
                 ", setor=" + setor +
+                ", marca=" + marca +
                 ", origem=" + origem +
                 '}';
     }

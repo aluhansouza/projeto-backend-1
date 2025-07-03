@@ -40,8 +40,14 @@ public class Material  implements Serializable {
     @Column(name = "situacao", nullable = false)
     private Material.Situacao situacao = Situacao.DISPONÍVEL;
 
-    @Column(name = "patrimonio", unique = true, length = 4)
+    @Column(name = "patrimonio", unique = true, length = 12)
     private String patrimonio;
+
+    @Column(name = "numserie", length = 40)
+    private String numserie;
+
+    @Column(name = "modelo", length = 40)
+    private String modelo;
 
     @Column(name = "imagem_url")
     private String imagemUrl;
@@ -53,6 +59,10 @@ public class Material  implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "setor_id")
     private Setor setor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "marca_id")
+    private Marca marca;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "origem_id")
@@ -92,14 +102,17 @@ public class Material  implements Serializable {
     // Construtores
     public Material() {}
 
-    public Material(Long id, String nome, Situacao situacao, String patrimonio, String imagemUrl, Categoria categoria, Setor setor, Origem origem, String localizacaoFisica, LocalDate dataAquisicao, String descricao, BigDecimal valorCompra, String identificacaoRecibo, String qrValor, TipoDepreciacao tipoDepreciacao, BigDecimal percentualDepreciacao, Integer vidaUtilAnos, BigDecimal valorAtual) {
+    public Material(Long id, String nome, Situacao situacao, String patrimonio, String numserie, String modelo, String imagemUrl, Categoria categoria, Setor setor, Marca marca, Origem origem, String localizacaoFisica, LocalDate dataAquisicao, String descricao, BigDecimal valorCompra, String identificacaoRecibo, String qrValor, TipoDepreciacao tipoDepreciacao, BigDecimal percentualDepreciacao, Integer vidaUtilAnos, BigDecimal valorAtual) {
         this.id = id;
         this.nome = nome;
         this.situacao = situacao;
         this.patrimonio = patrimonio;
+        this.numserie = numserie;
+        this.modelo = modelo;
         this.imagemUrl = imagemUrl;
         this.categoria = categoria;
         this.setor = setor;
+        this.marca = marca;
         this.origem = origem;
         this.localizacaoFisica = localizacaoFisica;
         this.dataAquisicao = dataAquisicao;
@@ -147,6 +160,22 @@ public class Material  implements Serializable {
         this.patrimonio = patrimonio;
     }
 
+    public String getNumSerie() {
+        return numserie;
+    }
+
+    public void setNumSerie(String numserie) {
+        this.numserie = numserie;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
     public String getImagemUrl() {
         return imagemUrl;
     }
@@ -169,6 +198,14 @@ public class Material  implements Serializable {
 
     public void setSetor(Setor setor) {
         this.setor = setor;
+    }
+
+    public Marca getMarca() {
+        return marca;
+    }
+
+    public void setMarca(Marca marca) {
+        this.marca = marca;
     }
 
     public Origem getOrigem() {
@@ -263,12 +300,12 @@ public class Material  implements Serializable {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Material material = (Material) o;
-        return Objects.equals(id, material.id) && Objects.equals(nome, material.nome) && situacao == material.situacao && Objects.equals(patrimonio, material.patrimonio) && Objects.equals(imagemUrl, material.imagemUrl) && Objects.equals(categoria, material.categoria) && Objects.equals(setor, material.setor) && Objects.equals(origem, material.origem) && Objects.equals(localizacaoFisica, material.localizacaoFisica) && Objects.equals(dataAquisicao, material.dataAquisicao) && Objects.equals(descricao, material.descricao) && Objects.equals(valorCompra, material.valorCompra) && Objects.equals(identificacaoRecibo, material.identificacaoRecibo) && Objects.equals(qrValor, material.qrValor) && tipoDepreciacao == material.tipoDepreciacao && Objects.equals(percentualDepreciacao, material.percentualDepreciacao) && Objects.equals(vidaUtilAnos, material.vidaUtilAnos) && Objects.equals(valorAtual, material.valorAtual);
+        return Objects.equals(id, material.id) && Objects.equals(nome, material.nome) && situacao == material.situacao && Objects.equals(patrimonio, material.patrimonio) && Objects.equals(numserie, material.numserie) && Objects.equals(modelo, material.modelo) && Objects.equals(imagemUrl, material.imagemUrl) && Objects.equals(categoria, material.categoria) && Objects.equals(setor, material.setor) && Objects.equals(marca, material.marca) && Objects.equals(origem, material.origem) && Objects.equals(localizacaoFisica, material.localizacaoFisica) && Objects.equals(dataAquisicao, material.dataAquisicao) && Objects.equals(descricao, material.descricao) && Objects.equals(valorCompra, material.valorCompra) && Objects.equals(identificacaoRecibo, material.identificacaoRecibo) && Objects.equals(qrValor, material.qrValor) && tipoDepreciacao == material.tipoDepreciacao && Objects.equals(percentualDepreciacao, material.percentualDepreciacao) && Objects.equals(vidaUtilAnos, material.vidaUtilAnos) && Objects.equals(valorAtual, material.valorAtual);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nome, situacao, patrimonio, imagemUrl, categoria, setor, origem, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
+        return Objects.hash(id, nome, situacao, patrimonio, numserie, modelo, imagemUrl, categoria, setor, marca, origem, localizacaoFisica, dataAquisicao, descricao, valorCompra, identificacaoRecibo, qrValor, tipoDepreciacao, percentualDepreciacao, vidaUtilAnos, valorAtual);
     }
 
     @Override
@@ -278,9 +315,12 @@ public class Material  implements Serializable {
                 ", nome='" + nome + '\'' +
                 ", situacao=" + situacao +
                 ", patrimonio='" + patrimonio + '\'' +
+                ", numserie='" + numserie + '\'' +
+                ", modelo='" + modelo + '\'' +
                 ", imagemUrl='" + imagemUrl + '\'' +
                 ", categoria=" + categoria +
                 ", setor=" + setor +
+                ", marca=" + marca +
                 ", origem=" + origem +
                 ", localizacaoFisica='" + localizacaoFisica + '\'' +
                 ", dataAquisicao=" + dataAquisicao +
