@@ -10,8 +10,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "tb_usuarios")
-public class Usuario extends Auditable implements UserDetails, Serializable {
+@Table(name = "tb_usuario")
+public class Usuario  extends Auditable  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,53 +40,9 @@ public class Usuario extends Auditable implements UserDetails, Serializable {
     @Column(nullable = false)
     private Boolean enabled = true;
 
-    @OneToMany(
-            mappedBy = "usuario",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER
-    )
-    private Set<UsuarioPermissao> usuariosPermissoes = new HashSet<>();
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UsuarioPerfil> usuarioPerfis;
 
-    // === UserDetails ===
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return usuariosPermissoes.stream()
-                .map(UsuarioPermissao::getPermissao)
-                .collect(Collectors.toSet());
-    }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.userName;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return this.accountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return this.accountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return this.credentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    // === Getters e Setters ===
     public Long getId() {
         return id;
     }
@@ -109,6 +65,10 @@ public class Usuario extends Auditable implements UserDetails, Serializable {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setPassword(String password) {
@@ -147,25 +107,38 @@ public class Usuario extends Auditable implements UserDetails, Serializable {
         this.enabled = enabled;
     }
 
-    public Set<UsuarioPermissao> getUsuariosPermissoes() {
-        return usuariosPermissoes;
+    public Set<UsuarioPerfil> getUsuarioPerfis() {
+        return usuarioPerfis;
     }
 
-    public void setUsuariosPermissoes(Set<UsuarioPermissao> usuariosPermissoes) {
-        this.usuariosPermissoes = usuariosPermissoes;
+    public void setUsuarioPerfis(Set<UsuarioPerfil> usuarioPerfis) {
+        this.usuarioPerfis = usuarioPerfis;
     }
 
-    // === equals & hashCode ===
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Usuario user)) return false;
-        return Objects.equals(id, user.id) &&
-                Objects.equals(userName, user.userName);
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(id, usuario.id) && Objects.equals(userName, usuario.userName) && Objects.equals(nome, usuario.nome) && Objects.equals(password, usuario.password) && Objects.equals(accountNonExpired, usuario.accountNonExpired) && Objects.equals(accountNonLocked, usuario.accountNonLocked) && Objects.equals(credentialsNonExpired, usuario.credentialsNonExpired) && Objects.equals(enabled, usuario.enabled) && Objects.equals(usuarioPerfis, usuario.usuarioPerfis);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userName);
+        return Objects.hash(id, userName, nome, password, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, usuarioPerfis);
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", nome='" + nome + '\'' +
+                ", password='" + password + '\'' +
+                ", accountNonExpired=" + accountNonExpired +
+                ", accountNonLocked=" + accountNonLocked +
+                ", credentialsNonExpired=" + credentialsNonExpired +
+                ", enabled=" + enabled +
+                ", usuarioPerfis=" + usuarioPerfis +
+                '}';
     }
 }

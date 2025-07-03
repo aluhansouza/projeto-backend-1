@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "tb_permissoes")
-public class Permissao extends Auditable implements GrantedAuthority, Serializable {
+public class Permissao extends Auditable implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,16 +20,6 @@ public class Permissao extends Auditable implements GrantedAuthority, Serializab
 
     @Column(unique = true, nullable = false)
     private String nome;
-
-    @OneToMany(mappedBy = "permissao", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UsuarioPermissao> usuariosPermissoes;
-
-    @Override
-    public String getAuthority() {
-        return this.nome;
-    }
-
-    // Getters e Setters
 
     public Long getId() {
         return id;
@@ -46,14 +36,9 @@ public class Permissao extends Auditable implements GrantedAuthority, Serializab
     public void setNome(String nome) {
         this.nome = nome;
     }
+    
 
-    public Set<UsuarioPermissao> getUsuariosPermissoes() {
-        return usuariosPermissoes;
-    }
 
-    public void setUsuariosPermissoes(Set<UsuarioPermissao> usuariosPermissoes) {
-        this.usuariosPermissoes = usuariosPermissoes;
-    }
 
     // equals e hashCode
 
@@ -68,5 +53,13 @@ public class Permissao extends Auditable implements GrantedAuthority, Serializab
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getNome());
+    }
+
+    @Override
+    public String toString() {
+        return "Permissao{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                '}';
     }
 }
