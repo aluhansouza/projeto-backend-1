@@ -1,15 +1,13 @@
 package api.entity;
 
-import api.entity.audit.Auditable;
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tb_usuario_perfil")
-public class UsuarioPerfil extends Auditable implements Serializable {
+public class UsuarioPerfil implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,6 +18,7 @@ public class UsuarioPerfil extends Auditable implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "perfil_id")
     private Perfil perfil;
@@ -33,60 +32,31 @@ public class UsuarioPerfil extends Auditable implements Serializable {
     @Column(name = "ativo", nullable = false)
     private Boolean ativo = true;
 
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Perfil getPerfil() { return perfil; }
+    public void setPerfil(Perfil perfil) { this.perfil = perfil; }
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
+    public LocalDate getDataAssociacao() { return dataAssociacao; }
+    public void setDataAssociacao(LocalDate dataAssociacao) { this.dataAssociacao = dataAssociacao; }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
+    public LocalDate getDataRemocao() { return dataRemocao; }
+    public void setDataRemocao(LocalDate dataRemocao) { this.dataRemocao = dataRemocao; }
 
-    public Perfil getPerfil() {
-        return perfil;
-    }
-
-    public void setPerfil(Perfil perfil) {
-        this.perfil = perfil;
-    }
-
-    public LocalDate getDataAssociacao() {
-        return dataAssociacao;
-    }
-
-    public void setDataAssociacao(LocalDate dataAssociacao) {
-        this.dataAssociacao = dataAssociacao;
-    }
-
-    public LocalDate getDataRemocao() {
-        return dataRemocao;
-    }
-
-    public void setDataRemocao(LocalDate dataRemocao) {
-        this.dataRemocao = dataRemocao;
-    }
-
-    public Boolean getAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
-    }
+    public Boolean getAtivo() { return ativo; }
+    public void setAtivo(Boolean ativo) { this.ativo = ativo; }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         UsuarioPerfil that = (UsuarioPerfil) o;
-        return Objects.equals(id, that.id) && Objects.equals(usuario, that.usuario) && Objects.equals(perfil, that.perfil) && Objects.equals(dataAssociacao, that.dataAssociacao) && Objects.equals(dataRemocao, that.dataRemocao) && Objects.equals(ativo, that.ativo);
+        return Objects.equals(id, that.id) && Objects.equals(usuario, that.usuario)
+                && Objects.equals(perfil, that.perfil) && Objects.equals(dataAssociacao, that.dataAssociacao)
+                && Objects.equals(dataRemocao, that.dataRemocao) && Objects.equals(ativo, that.ativo);
     }
 
     @Override
@@ -106,5 +76,3 @@ public class UsuarioPerfil extends Auditable implements Serializable {
                 '}';
     }
 }
-
-

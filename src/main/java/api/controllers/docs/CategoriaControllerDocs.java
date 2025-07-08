@@ -1,7 +1,6 @@
 package api.controllers.docs;
 
 import api.dto.request.CategoriaRequestDTO;
-import api.dto.request.SetorRequestDTO;
 import api.dto.response.CategoriaResponseDTO;
 import api.dto.response.SetorResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;

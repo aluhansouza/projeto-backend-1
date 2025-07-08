@@ -1,15 +1,13 @@
 package api.entity;
 
-import api.entity.audit.Auditable;
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
-@Table(name = "tb_perfil")
 @Entity
-public class Perfil extends Auditable implements Serializable {
+@Table(name = "tb_perfil")
+public class Perfil implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +20,6 @@ public class Perfil extends Auditable implements Serializable {
     @OneToMany(mappedBy = "perfil", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UsuarioPerfil> usuarioPerfis;
 
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "perfil_permissao",
@@ -31,38 +28,17 @@ public class Perfil extends Auditable implements Serializable {
     )
     private Set<Permissao> permissoes;
 
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Set<UsuarioPerfil> getUsuarioPerfis() { return usuarioPerfis; }
+    public void setUsuarioPerfis(Set<UsuarioPerfil> usuarioPerfis) { this.usuarioPerfis = usuarioPerfis; }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Set<UsuarioPerfil> getUsuarioPerfis() {
-        return usuarioPerfis;
-    }
-
-    public void setUsuarioPerfis(Set<UsuarioPerfil> usuarioPerfis) {
-        this.usuarioPerfis = usuarioPerfis;
-    }
-
-    public Set<Permissao> getPermissoes() {
-        return permissoes;
-    }
-
-    public void setPermissoes(Set<Permissao> permissoes) {
-        this.permissoes = permissoes;
-    }
+    public Set<Permissao> getPermissoes() { return permissoes; }
+    public void setPermissoes(Set<Permissao> permissoes) { this.permissoes = permissoes; }
 
     @Override
     public boolean equals(Object o) {

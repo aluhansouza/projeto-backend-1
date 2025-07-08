@@ -7,22 +7,22 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 
 @SpringBootApplication(
 // exclui toda a configuração de security
-		exclude = {
-				SecurityAutoConfiguration .class,
-				org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration.class
-		}
+        exclude = {
+                SecurityAutoConfiguration .class,
+                org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration.class
+        }
 )
 public class ApiApplication {
 
 
 
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		SpringApplication.run(ApiApplication.class, args);
+        SpringApplication.run(ApiApplication.class, args);
 
 
-	}
+    }
 
 
 

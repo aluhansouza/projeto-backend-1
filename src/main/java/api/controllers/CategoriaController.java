@@ -1,13 +1,9 @@
 package api.controllers;
 
 import api.controllers.docs.CategoriaControllerDocs;
-import api.controllers.docs.SetorControllerDocs;
 import api.dto.request.CategoriaRequestDTO;
-import api.dto.request.SetorRequestDTO;
 import api.dto.response.CategoriaResponseDTO;
-import api.dto.response.SetorResponseDTO;
 import api.services.interfaces.CategoriaService;
-import api.services.interfaces.SetorService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

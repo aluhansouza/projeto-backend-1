@@ -1,11 +1,8 @@
 package api.mapstruct;
 
 import api.dto.request.OrigemRequestDTO;
-import api.dto.request.SetorRequestDTO;
 import api.dto.response.OrigemResponseDTO;
-import api.dto.response.SetorResponseDTO;
 import api.entity.Origem;
-import api.entity.Setor;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

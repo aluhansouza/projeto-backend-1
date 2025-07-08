@@ -1,9 +1,7 @@
 package api.services.interfaces;
 
 import api.dto.request.CategoriaRequestDTO;
-import api.dto.request.SetorRequestDTO;
 import api.dto.response.CategoriaResponseDTO;
-import api.dto.response.SetorResponseDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;

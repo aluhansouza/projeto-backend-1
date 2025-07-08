@@ -1,16 +1,12 @@
 package api.entity;
 
-import api.entity.audit.Auditable;
 import jakarta.persistence.*;
-import org.springframework.security.core.GrantedAuthority;
-
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
-@Table(name = "tb_permissoes")
-public class Permissao extends Auditable implements Serializable {
+@Table(name = "tb_permissao")
+public class Permissao implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -21,38 +17,23 @@ public class Permissao extends Auditable implements Serializable {
     @Column(unique = true, nullable = false)
     private String nome;
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-    
-
-
-
-    // equals e hashCode
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Permissao that)) return false;
-        return Objects.equals(getId(), that.getId()) &&
-                Objects.equals(getNome(), that.getNome());
+        if (o == null || getClass() != o.getClass()) return false;
+        Permissao permissao = (Permissao) o;
+        return Objects.equals(id, permissao.id) && Objects.equals(nome, permissao.nome);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getNome());
+        return Objects.hash(id, nome);
     }
 
     @Override

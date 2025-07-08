@@ -1,4 +1,4 @@
-package api.dto.request;
+package api.dto.request.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

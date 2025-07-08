@@ -1,6 +1,6 @@
 package api.services.interfaces;
 
-import api.dto.request.SetorRequestDTO;
+import api.dto.request.auth.SetorRequestDTO;
 import api.dto.response.SetorResponseDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;

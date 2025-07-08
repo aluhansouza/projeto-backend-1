@@ -1,7 +1,7 @@
 package api.services.impl;
 
 import api.controllers.SetorController;
-import api.dto.request.SetorRequestDTO;
+import api.dto.request.auth.SetorRequestDTO;
 import api.dto.response.SetorResponseDTO;
 import api.entity.Setor;
 import api.exceptions.BadRequestException;

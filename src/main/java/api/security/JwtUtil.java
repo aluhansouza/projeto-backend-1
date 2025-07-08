@@ -14,30 +14,42 @@ import java.util.Date;
 public class JwtUtil {
     private final Algorithm algorithm;
     private final long expirationTimeMs;
+    private final long refreshExpirationTimeMs;
 
     public JwtUtil(
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration}") long expirationTimeMs
+            @Value("${jwt.expiration}") long expirationTimeMs,
+            @Value("${jwt.refresh-expiration}") long refreshExpirationTimeMs
     ) {
         this.algorithm = Algorithm.HMAC256(secretKey);
         this.expirationTimeMs = expirationTimeMs;
+        this.refreshExpirationTimeMs = refreshExpirationTimeMs;
     }
 
     public String generateToken(String username) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expirationTimeMs);
+        return buildToken(username, expirationTimeMs, false);
+    }
 
-        return JWT.create()
+    public String generateRefreshToken(String username) {
+        return buildToken(username, refreshExpirationTimeMs, true);
+    }
+
+    private String buildToken(String username, long duration, boolean isRefresh) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + duration);
+
+        com.auth0.jwt.JWTCreator.Builder builder = JWT.create()
                 .withSubject(username)
                 .withIssuedAt(now)
-                .withExpiresAt(expiryDate)
-                .sign(algorithm);
+                .withExpiresAt(expiryDate);
+        if (isRefresh) {
+            builder.withClaim("refresh", true);
+        }
+        return builder.sign(algorithm);
     }
 
     public String getUsernameFromToken(String token) {
-        DecodedJWT decodedJWT = JWT.require(algorithm)
-                .build()
-                .verify(token);
+        DecodedJWT decodedJWT = JWT.require(algorithm).build().verify(token);
         return decodedJWT.getSubject();
     }
 
@@ -47,8 +59,12 @@ public class JwtUtil {
             verifier.verify(token);
             return true;
         } catch (JWTVerificationException ex) {
-            // log.error("Token inválido: " + ex.getMessage());
-            throw new InvalidJwtTokenException("Token inválido: " + ex.getMessage());
+            return false;
         }
+    }
+
+    public boolean isRefreshToken(String token) {
+        DecodedJWT decodedJWT = JWT.require(algorithm).build().verify(token);
+        return decodedJWT.getClaim("refresh").asBoolean() != null && decodedJWT.getClaim("refresh").asBoolean();
     }
 }

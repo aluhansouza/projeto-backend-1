@@ -1,18 +1,16 @@
-package api.dto.request;
+package api.dto.request.auth;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Credenciais para login")
-public class LoginRequestDTO {
-    @Schema(description = "Nome de usuário", example = "admin")
+public class UsuarioCadastroRequestDTO {
     private String username;
-
-    @Schema(description = "Senha do usuário", example = "123456")
+    private String nome;
     private String password;
 
-    // Getters e setters
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
+
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }

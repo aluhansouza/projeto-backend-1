@@ -1,7 +1,7 @@
 package api.controllers.docs;
 
-import api.dto.request.LoginRequestDTO;
-import api.dto.response.LoginResponseDTO;
+import api.dto.request.auth.LoginRequestDTO;
+import api.dto.response.auth.LoginResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,8 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.Map;
 
 public interface AuthControllerDocs {
 
@@ -31,7 +29,6 @@ public interface AuthControllerDocs {
                     content = @Content
             )
     })
-    @PostMapping("/login")
     ResponseEntity<LoginResponseDTO> login(
             @RequestBody(
                     description = "Credenciais do usuário",

@@ -1,6 +1,6 @@
 package api.security;
 
-import api.services.interfaces.UsuarioService;
+import api.services.impl.UsuarioServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,18 +9,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Component
 public class JwtAuthenticatorFilter extends OncePerRequestFilter {
-
 
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioServiceImpl usuarioService;
+
+    public JwtAuthenticatorFilter(UsuarioServiceImpl usuarioService) {
+        this.usuarioService = usuarioService;
+    }
+
+
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -34,8 +41,14 @@ public class JwtAuthenticatorFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-            if (jwtUtil.validateToken(token)) {
-                username = jwtUtil.getUsernameFromToken(token);
+            try {
+                if (jwtUtil.validateToken(token)) {
+                    username = jwtUtil.getUsernameFromToken(token);
+                }
+            } catch (Exception ex) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Token inválido ou expirado");
+                return;
             }
         }
 
@@ -49,7 +62,4 @@ public class JwtAuthenticatorFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
-
-
 }
