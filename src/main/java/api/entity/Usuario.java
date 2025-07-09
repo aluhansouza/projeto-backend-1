@@ -36,52 +36,91 @@ public class Usuario implements Serializable {
     @Column(name = "enabled",nullable = false)
     private Boolean enabled = true;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "usuario",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UsuarioPerfil> usuarioPerfis;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getUserName() { return userName; }
-    public void setUserName(String userName) { this.userName = userName; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public String getUserName() {
+        return userName;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-    public Boolean getAccountNonExpired() { return accountNonExpired; }
-    public void setAccountNonExpired(Boolean accountNonExpired) { this.accountNonExpired = accountNonExpired; }
+    public String getNome() {
+        return nome;
+    }
 
-    public Boolean getAccountNonLocked() { return accountNonLocked; }
-    public void setAccountNonLocked(Boolean accountNonLocked) { this.accountNonLocked = accountNonLocked; }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-    public Boolean getCredentialsNonExpired() { return credentialsNonExpired; }
-    public void setCredentialsNonExpired(Boolean credentialsNonExpired) { this.credentialsNonExpired = credentialsNonExpired; }
+    public String getPassword() {
+        return password;
+    }
 
-    public Boolean getEnabled() { return enabled; }
-    public void setEnabled(Boolean enabled) { this.enabled = enabled; }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    public Set<UsuarioPerfil> getUsuarioPerfis() { return usuarioPerfis; }
-    public void setUsuarioPerfis(Set<UsuarioPerfil> usuarioPerfis) { this.usuarioPerfis = usuarioPerfis; }
+    public Boolean getAccountNonExpired() {
+        return accountNonExpired;
+    }
+
+    public void setAccountNonExpired(Boolean accountNonExpired) {
+        this.accountNonExpired = accountNonExpired;
+    }
+
+    public Boolean getAccountNonLocked() {
+        return accountNonLocked;
+    }
+
+    public void setAccountNonLocked(Boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
+    }
+
+    public Boolean getCredentialsNonExpired() {
+        return credentialsNonExpired;
+    }
+
+    public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
+        this.credentialsNonExpired = credentialsNonExpired;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Set<UsuarioPerfil> getUsuarioPerfis() {
+        return usuarioPerfis;
+    }
+
+    public void setUsuarioPerfis(Set<UsuarioPerfil> usuarioPerfis) {
+        this.usuarioPerfis = usuarioPerfis;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Usuario usuario = (Usuario) o;
-        return Objects.equals(id, usuario.id) && Objects.equals(userName, usuario.userName)
-                && Objects.equals(nome, usuario.nome) && Objects.equals(password, usuario.password)
-                && Objects.equals(accountNonExpired, usuario.accountNonExpired)
-                && Objects.equals(accountNonLocked, usuario.accountNonLocked)
-                && Objects.equals(credentialsNonExpired, usuario.credentialsNonExpired)
-                && Objects.equals(enabled, usuario.enabled)
-                && Objects.equals(usuarioPerfis, usuario.usuarioPerfis);
+        return Objects.equals(id, usuario.id) && Objects.equals(userName, usuario.userName) && Objects.equals(nome, usuario.nome) && Objects.equals(password, usuario.password) && Objects.equals(accountNonExpired, usuario.accountNonExpired) && Objects.equals(accountNonLocked, usuario.accountNonLocked) && Objects.equals(credentialsNonExpired, usuario.credentialsNonExpired) && Objects.equals(enabled, usuario.enabled);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userName, nome, password, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, usuarioPerfis);
+        return Objects.hash(id, userName, nome, password, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled);
     }
 
     @Override
@@ -95,7 +134,6 @@ public class Usuario implements Serializable {
                 ", accountNonLocked=" + accountNonLocked +
                 ", credentialsNonExpired=" + credentialsNonExpired +
                 ", enabled=" + enabled +
-                ", usuarioPerfis=" + usuarioPerfis +
                 '}';
     }
 }

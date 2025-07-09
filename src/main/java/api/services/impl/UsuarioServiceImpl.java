@@ -50,27 +50,30 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
             System.out.println("credentialsNonExpired: " + usuario.getCredentialsNonExpired());
             System.out.println("usuarioPerfis: " + usuario.getUsuarioPerfis());
 
-            Set<String> roles = new HashSet<>();
+            // Pegando as permissões diretamente dos perfis
+            Set<String> authorities = new HashSet<>();
             if (usuario.getUsuarioPerfis() != null) {
                 usuario.getUsuarioPerfis().forEach(usuarioPerfil -> {
-                    System.out.println("Perfil: " + usuarioPerfil);
-                    if (usuarioPerfil.getPerfil() == null) {
-                        System.out.println("Perfil do usuário está NULL!");
+                    Perfil perfil = usuarioPerfil.getPerfil();
+                    if (perfil != null && perfil.getPermissoes() != null) {
+                        perfil.getPermissoes().forEach(permissao -> {
+                            System.out.println("Permissão encontrada: " + permissao.getNome());
+                            authorities.add(permissao.getNome()); // Exemplo: ROLE_ADMINISTRADOR
+                        });
                     } else {
-                        System.out.println("Nome do perfil: " + usuarioPerfil.getPerfil().getNome());
-                        roles.add(usuarioPerfil.getPerfil().getNome());
+                        System.out.println("Perfil ou permissões do perfil estão nulos!");
                     }
                 });
             } else {
                 System.out.println("usuarioPerfis está NULL!");
             }
 
-            System.out.println("Roles extraídas: " + roles);
+            System.out.println("Authorities extraídas: " + authorities);
 
             return User.builder()
                     .username(usuario.getUserName())
                     .password(usuario.getPassword())
-                    .roles(roles.toArray(new String[0]))
+                    .authorities(authorities.toArray(new String[0]))
                     .accountExpired(usuario.getAccountNonExpired() != null && !usuario.getAccountNonExpired())
                     .accountLocked(usuario.getAccountNonLocked() != null && !usuario.getAccountNonLocked())
                     .credentialsExpired(usuario.getCredentialsNonExpired() != null && !usuario.getCredentialsNonExpired())

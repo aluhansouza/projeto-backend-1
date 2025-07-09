@@ -50,13 +50,12 @@ public class UsuarioPerfil implements Serializable {
     public Boolean getAtivo() { return ativo; }
     public void setAtivo(Boolean ativo) { this.ativo = ativo; }
 
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         UsuarioPerfil that = (UsuarioPerfil) o;
-        return Objects.equals(id, that.id) && Objects.equals(usuario, that.usuario)
-                && Objects.equals(perfil, that.perfil) && Objects.equals(dataAssociacao, that.dataAssociacao)
-                && Objects.equals(dataRemocao, that.dataRemocao) && Objects.equals(ativo, that.ativo);
+        return Objects.equals(id, that.id) && Objects.equals(usuario, that.usuario) && Objects.equals(perfil, that.perfil) && Objects.equals(dataAssociacao, that.dataAssociacao) && Objects.equals(dataRemocao, that.dataRemocao) && Objects.equals(ativo, that.ativo);
     }
 
     @Override
