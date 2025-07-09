@@ -21,7 +21,7 @@ public class Usuario implements Serializable {
     @Column(name = "nome", nullable = false)
     private String nome;
 
-    @Column(nullable = false)
+    @Column(name = "password",nullable = false)
     private String password;
 
     @Column(name = "account_non_expired")
@@ -33,7 +33,7 @@ public class Usuario implements Serializable {
     @Column(name = "credentials_non_expired")
     private Boolean credentialsNonExpired = true;
 
-    @Column(nullable = false)
+    @Column(name = "enabled",nullable = false)
     private Boolean enabled = true;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)

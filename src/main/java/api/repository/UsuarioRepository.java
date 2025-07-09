@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    @Query("SELECT u FROM Usuario u WHERE u.userName =:userName")
+    @Query("SELECT u FROM Usuario u LEFT JOIN FETCH u.usuarioPerfis up LEFT JOIN FETCH up.perfil WHERE u.userName = :userName")
     Optional<Usuario> buscarPorUsuario(@Param("userName") String userName);
 
 

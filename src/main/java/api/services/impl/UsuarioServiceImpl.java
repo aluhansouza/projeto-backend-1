@@ -36,28 +36,52 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Busca pelo método correto do repositório
-        Usuario usuario = usuarioRepository.buscarPorUsuario(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
+        System.out.println("Tentando autenticar usuário: " + username);
+        try {
+            Usuario usuario = usuarioRepository.buscarPorUsuario(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
+            System.out.println("Usuário encontrado: " + usuario);
 
-        // Obtendo os perfis/roles do usuário
-        Set<String> roles = new HashSet<>();
-        if (usuario.getUsuarioPerfis() != null) {
-            usuario.getUsuarioPerfis().forEach(usuarioPerfil -> {
-                roles.add(usuarioPerfil.getPerfil().getNome()); // Ex: ROLE_ADMIN, ROLE_USER
-            });
+            System.out.println("userName: " + usuario.getUserName());
+            System.out.println("password: " + usuario.getPassword());
+            System.out.println("enabled: " + usuario.getEnabled());
+            System.out.println("accountNonExpired: " + usuario.getAccountNonExpired());
+            System.out.println("accountNonLocked: " + usuario.getAccountNonLocked());
+            System.out.println("credentialsNonExpired: " + usuario.getCredentialsNonExpired());
+            System.out.println("usuarioPerfis: " + usuario.getUsuarioPerfis());
+
+            Set<String> roles = new HashSet<>();
+            if (usuario.getUsuarioPerfis() != null) {
+                usuario.getUsuarioPerfis().forEach(usuarioPerfil -> {
+                    System.out.println("Perfil: " + usuarioPerfil);
+                    if (usuarioPerfil.getPerfil() == null) {
+                        System.out.println("Perfil do usuário está NULL!");
+                    } else {
+                        System.out.println("Nome do perfil: " + usuarioPerfil.getPerfil().getNome());
+                        roles.add(usuarioPerfil.getPerfil().getNome());
+                    }
+                });
+            } else {
+                System.out.println("usuarioPerfis está NULL!");
+            }
+
+            System.out.println("Roles extraídas: " + roles);
+
+            return User.builder()
+                    .username(usuario.getUserName())
+                    .password(usuario.getPassword())
+                    .roles(roles.toArray(new String[0]))
+                    .accountExpired(usuario.getAccountNonExpired() != null && !usuario.getAccountNonExpired())
+                    .accountLocked(usuario.getAccountNonLocked() != null && !usuario.getAccountNonLocked())
+                    .credentialsExpired(usuario.getCredentialsNonExpired() != null && !usuario.getCredentialsNonExpired())
+                    .disabled(usuario.getEnabled() != null && !usuario.getEnabled())
+                    .build();
+
+        } catch (Exception e) {
+            System.out.println("Erro ao autenticar usuário!");
+            e.printStackTrace();
+            throw e;
         }
-
-        // Retorna o UserDetails para o Spring Security
-        return User.builder()
-                .username(usuario.getUserName())
-                .password(usuario.getPassword())
-                .roles(roles.toArray(new String[0]))
-                .accountExpired(!usuario.getAccountNonExpired())
-                .accountLocked(!usuario.getAccountNonLocked())
-                .credentialsExpired(!usuario.getCredentialsNonExpired())
-                .disabled(!usuario.getEnabled())
-                .build();
     }
 
     public UsuarioCadastroResponseDTO cadastro(UsuarioCadastroRequestDTO registroRequest) {
@@ -65,12 +89,8 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
             return new UsuarioCadastroResponseDTO("Usuário já existente!");
         }
 
-        Perfil perfilPadrao = perfilRepository.findByNome("ROLE_USUARIO")
-                .orElseGet(() -> {
-                    Perfil p = new Perfil();
-                    p.setNome("ROLE_USER");
-                    return perfilRepository.save(p);
-                });
+        Perfil perfilPadrao = perfilRepository.findByNome("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Perfil padrão não encontrado"));
 
         Usuario usuario = usuarioMapper.toEntity(registroRequest);
         usuario.setPassword(passwordEncoder.encode(registroRequest.getPassword()));
@@ -82,13 +102,8 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         usuarioPerfil.setAtivo(true);
 
         usuario.setUsuarioPerfis(Collections.singleton(usuarioPerfil));
-
         usuarioRepository.save(usuario);
 
         return new UsuarioCadastroResponseDTO("Usuário cadastrado com sucesso!");
     }
-
-
-
-
 }

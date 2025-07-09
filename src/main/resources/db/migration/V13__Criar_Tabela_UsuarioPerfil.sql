@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `tb_usuario_perfil` (
   `usuario_id` INT NOT NULL,
   `perfil_id` INT NOT NULL,
   `data_associacao` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `data_remocao` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `ativo` TINYINT(1) DEFAULT 1,
   UNIQUE KEY `uk_usuario_perfil` (`usuario_id`, `perfil_id`),
   CONSTRAINT `fk_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `tb_usuario`(`id`) ON DELETE CASCADE,
