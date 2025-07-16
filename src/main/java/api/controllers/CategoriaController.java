@@ -15,6 +15,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +26,7 @@ public class CategoriaController implements CategoriaControllerDocs {
     @Autowired
     private CategoriaService categoriaService;
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping(produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -40,6 +42,8 @@ public class CategoriaController implements CategoriaControllerDocs {
         return ResponseEntity.ok(categoriaService.listar(pageable));
     }
 
+
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping(value = "/buscarPorNome/{nome}", produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -56,6 +60,7 @@ public class CategoriaController implements CategoriaControllerDocs {
         return ResponseEntity.ok(categoriaService.buscarPorNome(nome, pageable));
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping(value = "/{id}", produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -65,6 +70,7 @@ public class CategoriaController implements CategoriaControllerDocs {
         return categoriaService.buscarPorId(id);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -78,6 +84,7 @@ public class CategoriaController implements CategoriaControllerDocs {
         return categoriaService.cadastrar(requestDTO);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PutMapping(value = "/{id}",
             consumes = {
                     MediaType.APPLICATION_JSON_VALUE,
@@ -93,6 +100,7 @@ public class CategoriaController implements CategoriaControllerDocs {
         return categoriaService.atualizar(id, requestDTO);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @DeleteMapping(value = "/{id}")
     @Override
     public ResponseEntity<Void> excluir(@PathVariable("id") Long id) {
@@ -100,6 +108,7 @@ public class CategoriaController implements CategoriaControllerDocs {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/verificar-conexao")
     public ResponseEntity<String> verificarConexao() {
         return ResponseEntity.ok("Conexão com Setor OK");

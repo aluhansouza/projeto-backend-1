@@ -7,6 +7,7 @@ import api.dto.request.auth.UsuarioCadastroRequestDTO;
 import api.dto.response.auth.LoginResponseDTO;
 import api.dto.response.auth.RefreshTokenResponseDTO;
 import api.dto.response.auth.UsuarioCadastroResponseDTO;
+import api.entity.Usuario;
 import api.security.JwtUtil;
 import api.services.impl.UsuarioServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -31,7 +34,6 @@ public class AuthController implements AuthControllerDocs {
     @Autowired
     private UsuarioServiceImpl usuarioService;
 
-
     @Override
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest) {
@@ -40,8 +42,19 @@ public class AuthController implements AuthControllerDocs {
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getUsername(), loginRequest.getPassword())
             );
-            String accessToken = jwtUtil.generateToken(loginRequest.getUsername());
-            String refreshToken = jwtUtil.generateRefreshToken(loginRequest.getUsername());
+
+
+            Usuario usuario = usuarioService.buscarPorUsuario(loginRequest.getUsername());
+
+
+            List<String> perfis = usuario.getUsuarioPerfis().stream()
+                    .map(usuarioPerfil -> usuarioPerfil.getPerfil().getNome())
+                    .distinct()
+                    .toList();
+
+
+            String accessToken = jwtUtil.generateToken(usuario.getUserName(), perfis);
+            String refreshToken = jwtUtil.generateRefreshToken(loginRequest.getUsername(), perfis);
 
             return ResponseEntity.ok(new LoginResponseDTO(accessToken, refreshToken));
         } catch (AuthenticationException e) {
@@ -53,18 +66,26 @@ public class AuthController implements AuthControllerDocs {
     public ResponseEntity<RefreshTokenResponseDTO> refresh(@RequestBody RefreshTokenRequestDTO refreshRequest) {
         String refreshToken = refreshRequest.getRefreshToken();
 
-        // Valida se o token é válido e se é realmente um refresh token
+
         if (!jwtUtil.validateToken(refreshToken) || !jwtUtil.isRefreshToken(refreshToken)) {
             return ResponseEntity.badRequest().build();
         }
 
         String username = jwtUtil.getUsernameFromToken(refreshToken);
-        String newAccessToken = jwtUtil.generateToken(username);
+
+
+        Usuario usuario = usuarioService.buscarPorUsuario(username);
+        List<String> roles = usuario.getUsuarioPerfis().stream()
+                .flatMap(usuarioPerfil -> usuarioPerfil.getPerfil().getPermissoes().stream())
+                .map(permissao -> permissao.getNome())
+                .distinct()
+                .toList();
+
+
+        String newAccessToken = jwtUtil.generateToken(username, roles);
 
         return ResponseEntity.ok(new RefreshTokenResponseDTO(newAccessToken));
     }
-
-
 
     @PostMapping("/cadastro")
     public ResponseEntity<UsuarioCadastroResponseDTO> cadastro(@RequestBody UsuarioCadastroRequestDTO registroRequest) {
@@ -74,8 +95,4 @@ public class AuthController implements AuthControllerDocs {
         }
         return ResponseEntity.status(201).body(response);
     }
-
-
-
-
 }

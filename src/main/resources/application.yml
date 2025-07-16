@@ -1,7 +1,7 @@
 cors:
   originPatterns: >
-    http://localhost:8080,
     http://localhost:4200,
+    http://localhost:8080,
     http://10.10.0.55:4200,
     https://www.google.com.br
 

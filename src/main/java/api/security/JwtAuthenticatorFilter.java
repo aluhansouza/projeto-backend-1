@@ -9,10 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticatorFilter extends OncePerRequestFilter {
@@ -25,9 +28,6 @@ public class JwtAuthenticatorFilter extends OncePerRequestFilter {
     public JwtAuthenticatorFilter(UsuarioServiceImpl usuarioService) {
         this.usuarioService = usuarioService;
     }
-
-
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -53,10 +53,18 @@ public class JwtAuthenticatorFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // Extraia os roles do JWT e converta para authorities com prefixo ROLE_
+            List<String> roles = jwtUtil.getRolesFromToken(token);
+            List<SimpleGrantedAuthority> authorities = roles.stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .collect(Collectors.toList());
+
             UserDetails userDetails = usuarioService.loadUserByUsername(username);
+
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
+                            userDetails, null, authorities);
+
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 

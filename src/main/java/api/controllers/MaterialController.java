@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/v1/materiais")
 @Tag(name = "Materiais", description = "Endpoints para Materiais")
@@ -57,7 +57,7 @@ public class MaterialController implements MaterialControllerDocs {
         return ResponseEntity.ok(materialService.listar(pageable));
     }
 
-
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping(value = "/buscarPorNome/{nome}", produces = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -74,7 +74,7 @@ public class MaterialController implements MaterialControllerDocs {
         return ResponseEntity.ok(materialService.buscarPorNome(nome, pageable));
     }
 
-
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping(value = "/{id}",
             produces = {
                     MediaType.APPLICATION_JSON_VALUE,
@@ -86,7 +86,7 @@ public class MaterialController implements MaterialControllerDocs {
         return materialService.buscarPorId(id);
     }
 
-
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping(
             consumes =  {MediaType.MULTIPART_FORM_DATA_VALUE}
             ,
@@ -103,6 +103,7 @@ public class MaterialController implements MaterialControllerDocs {
         return materialService.cadastrar(materialRequestDTO, imagem);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PutMapping(
             value = "/{id}",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
@@ -117,11 +118,11 @@ public class MaterialController implements MaterialControllerDocs {
             @RequestPart("material") MaterialRequestDTO dtoRequest,  // O DTO com os dados atualizados
             @RequestPart(value = "imagem", required = false) MultipartFile imagem  // O arquivo de imagem, opcional
     ) {
-        // Chama o serviço para atualizar o material e retorna o DTO de resposta
+
         return materialService.atualizar(id, dtoRequest, imagem);
     }
 
-
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @DeleteMapping(value = "/{id}")
     @Override
     public ResponseEntity<?> excluir(@PathVariable("id") Long id) {
@@ -132,7 +133,7 @@ public class MaterialController implements MaterialControllerDocs {
 
     // -----------------------------------------------------------------------
 
-
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping(value = "/exportarPagina", produces = {
             MediaTypes.APPLICATION_XLSX_VALUE,
             MediaTypes.APPLICATION_CSV_VALUE,
@@ -175,6 +176,7 @@ public class MaterialController implements MaterialControllerDocs {
                 .body(file);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @PostMapping(value = "/massCreation",
             produces = {
                     MediaType.APPLICATION_JSON_VALUE,
@@ -186,6 +188,7 @@ public class MaterialController implements MaterialControllerDocs {
         return materialService.massCreation(file);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping(value = "/exportar/{id}",
             produces = {
                     MediaType.APPLICATION_PDF_VALUE}
@@ -203,6 +206,7 @@ public class MaterialController implements MaterialControllerDocs {
                 .body(file);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     @GetMapping("/verificar-conexao")
     public ResponseEntity<String> verificarConexao() {
         return ResponseEntity.ok("Conexão bem-sucedida");

@@ -87,6 +87,11 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         }
     }
 
+    public Usuario buscarPorUsuario(String username) {
+        return usuarioRepository.buscarPorUsuario(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+    }
+
     public UsuarioCadastroResponseDTO cadastro(UsuarioCadastroRequestDTO registroRequest) {
         if (usuarioRepository.existsByUserName(registroRequest.getUsername())) {
             return new UsuarioCadastroResponseDTO("Usuário já existente!");
