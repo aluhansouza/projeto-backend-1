@@ -83,12 +83,6 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        //.requestMatchers("/api/v1/origens").permitAll()
-                        //.requestMatchers("/api/v1/setores/**").hasRole("ADMINISTRADOR")
-                        //.requestMatchers("/api/v1/origens/**").hasRole("ADMINISTRADOR")
-                        //.requestMatchers("/api/v1/categorias/**").hasRole("ADMINISTRADOR")
-                        //.requestMatchers("/api/v1/marcas/**").hasRole("ADMINISTRADOR")
-                        //.requestMatchers("/api/v1/materiais/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/auth/**", "/public/**", "/error").permitAll()
                         .anyRequest().authenticated()
                 )

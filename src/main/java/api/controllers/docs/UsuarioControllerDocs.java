@@ -1,7 +1,7 @@
 package api.controllers.docs;
 
-import api.dto.request.SetorRequestDTO;
-import api.dto.response.SetorResponseDTO;
+import api.dto.request.UsuarioRequestDTO;
+import api.dto.response.UsuarioResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,32 +13,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-public interface SetorControllerDocs {
+public interface UsuarioControllerDocs {
 
-    @Operation(summary = "Listar todos os setores",
-            description = "Retorna todos os setores de forma paginada",
-            tags = {"Setores"},
+    @Operation(summary = "Listar todos os usuários",
+            description = "Retorna todos os usuários de forma paginada",
+            tags = {"Usuários"},
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = SetorResponseDTO.class)))),
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = UsuarioResponseDTO.class)))),
                     @ApiResponse(description = "No Content", responseCode = "204"),
                     @ApiResponse(description = "Bad Request", responseCode = "400"),
                     @ApiResponse(description = "Unauthorized", responseCode = "401"),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500")
             }
     )
-    ResponseEntity<PagedModel<EntityModel<SetorResponseDTO>>> listar(
+    ResponseEntity<PagedModel<EntityModel<UsuarioResponseDTO>>> listar(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction
     );
 
-    @Operation(summary = "Buscar setor por nome",
-            description = "Retorna setores com nome semelhante (filtro paginado)",
-            tags = {"Setores"},
+    @Operation(summary = "Buscar usuário por nome",
+            description = "Retorna usuários com nome semelhante (filtro paginado)",
+            tags = {"Usuários"},
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = SetorResponseDTO.class)))),
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = UsuarioResponseDTO.class)))),
                     @ApiResponse(description = "No Content", responseCode = "204"),
                     @ApiResponse(description = "Bad Request", responseCode = "400"),
                     @ApiResponse(description = "Unauthorized", responseCode = "401"),
@@ -46,7 +46,7 @@ public interface SetorControllerDocs {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500")
             }
     )
-    ResponseEntity<PagedModel<EntityModel<SetorResponseDTO>>> buscarPorNome(
+    ResponseEntity<PagedModel<EntityModel<UsuarioResponseDTO>>> buscarPorNome(
             @PathVariable("nome") String nome,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "12") Integer size,
@@ -55,45 +55,45 @@ public interface SetorControllerDocs {
 
     @Operation(summary = "Buscar setor por ID",
             description = "Retorna os dados de um setor específico",
-            tags = {"Setores"},
+            tags = {"Usuários"},
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = SetorResponseDTO.class))),
+                            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
                     @ApiResponse(description = "Not Found", responseCode = "404"),
                     @ApiResponse(description = "Bad Request", responseCode = "400"),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500")
             }
     )
-    SetorResponseDTO buscarPorId(@PathVariable("id") Long id);
+    UsuarioResponseDTO buscarPorId(@PathVariable("id") Long id);
 
     @Operation(summary = "Cadastrar novo setor",
             description = "Cria um novo setor",
-            tags = {"Setores"},
+            tags = {"Usuários"},
             responses = {
                     @ApiResponse(description = "Created", responseCode = "201",
-                            content = @Content(schema = @Schema(implementation = SetorResponseDTO.class))),
+                            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
                     @ApiResponse(description = "Bad Request", responseCode = "400"),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500")
             }
     )
-    SetorResponseDTO cadastrar(SetorRequestDTO requestDTO);
+    UsuarioResponseDTO cadastrar(UsuarioRequestDTO requestDTO);
 
     @Operation(summary = "Atualizar setor",
             description = "Atualiza os dados de um setor existente",
-            tags = {"Setores"},
+            tags = {"Usuários"},
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = SetorResponseDTO.class))),
+                            content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))),
                     @ApiResponse(description = "Not Found", responseCode = "404"),
                     @ApiResponse(description = "Bad Request", responseCode = "400"),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500")
             }
     )
-    SetorResponseDTO atualizar(@PathVariable("id") Long id, SetorRequestDTO requestDTO);
+    UsuarioResponseDTO atualizar(@PathVariable("id") Long id, UsuarioRequestDTO requestDTO);
 
     @Operation(summary = "Excluir setor",
             description = "Remove um setor pelo ID",
-            tags = {"Setores"},
+            tags = {"Usuários"},
             responses = {
                     @ApiResponse(description = "No Content", responseCode = "204"),
                     @ApiResponse(description = "Not Found", responseCode = "404"),

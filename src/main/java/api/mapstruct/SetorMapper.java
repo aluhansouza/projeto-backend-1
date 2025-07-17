@@ -1,6 +1,6 @@
 package api.mapstruct;
 
-import api.dto.request.auth.SetorRequestDTO;
+import api.dto.request.SetorRequestDTO;
 import api.dto.response.SetorResponseDTO;
 import api.entity.Setor;
 import org.mapstruct.*;

@@ -27,15 +27,17 @@ public class JwtUtil {
         this.refreshExpirationTimeMs = refreshExpirationTimeMs;
     }
 
-    public String generateToken(String username, List<String> roles) {
-        return buildToken(username, roles, expirationTimeMs, false);
+
+    public String generateToken(String username, List<String> roles, List<String> permissoes) {
+        return buildToken(username, roles, permissoes, expirationTimeMs, false);
     }
 
-    public String generateRefreshToken(String username, List<String> roles) {
-        return buildToken(username, roles, refreshExpirationTimeMs, true);
+    public String generateRefreshToken(String username, List<String> roles, List<String> permissoes) {
+        return buildToken(username, roles, permissoes, refreshExpirationTimeMs, true);
     }
 
-    private String buildToken(String username, List<String> roles, long duration, boolean isRefresh) {
+
+    private String buildToken(String username, List<String> roles, List<String> permissoes, long duration, boolean isRefresh) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + duration);
 
@@ -43,7 +45,8 @@ public class JwtUtil {
                 .withSubject(username)
                 .withIssuedAt(now)
                 .withExpiresAt(expiryDate)
-                .withClaim("roles", roles); // <-- Aqui adiciona os perfis ao token
+                .withClaim("perfis", roles)
+                .withClaim("permissoes", permissoes);
 
         if (isRefresh) {
             builder.withClaim("refresh", true);
@@ -58,7 +61,13 @@ public class JwtUtil {
 
     public List<String> getRolesFromToken(String token) {
         DecodedJWT decodedJWT = JWT.require(algorithm).build().verify(token);
-        return decodedJWT.getClaim("roles").asList(String.class);
+        return decodedJWT.getClaim("perfis").asList(String.class);
+    }
+
+
+    public List<String> getPermissoesFromToken(String token) {
+        DecodedJWT decodedJWT = JWT.require(algorithm).build().verify(token);
+        return decodedJWT.getClaim("permissoes").asList(String.class);
     }
 
     public boolean validateToken(String token) {
@@ -76,9 +85,4 @@ public class JwtUtil {
         Boolean refresh = decodedJWT.getClaim("refresh").asBoolean();
         return Boolean.TRUE.equals(refresh);
     }
-
-
-
-
-
 }

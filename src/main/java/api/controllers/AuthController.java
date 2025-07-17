@@ -3,10 +3,8 @@ package api.controllers;
 import api.controllers.docs.AuthControllerDocs;
 import api.dto.request.auth.LoginRequestDTO;
 import api.dto.request.auth.RefreshTokenRequestDTO;
-import api.dto.request.auth.UsuarioCadastroRequestDTO;
 import api.dto.response.auth.LoginResponseDTO;
 import api.dto.response.auth.RefreshTokenResponseDTO;
-import api.dto.response.auth.UsuarioCadastroResponseDTO;
 import api.entity.Usuario;
 import api.security.JwtUtil;
 import api.services.impl.UsuarioServiceImpl;
@@ -43,18 +41,24 @@ public class AuthController implements AuthControllerDocs {
                             loginRequest.getUsername(), loginRequest.getPassword())
             );
 
-
             Usuario usuario = usuarioService.buscarPorUsuario(loginRequest.getUsername());
 
-
+            // Perfis
             List<String> perfis = usuario.getUsuarioPerfis().stream()
                     .map(usuarioPerfil -> usuarioPerfil.getPerfil().getNome())
                     .distinct()
                     .toList();
 
+            // Permissões
+            List<String> permissoes = usuario.getUsuarioPerfis().stream()
+                    .flatMap(usuarioPerfil -> usuarioPerfil.getPerfil().getPermissoes().stream())
+                    .map(permissao -> permissao.getNome())
+                    .distinct()
+                    .toList();
 
-            String accessToken = jwtUtil.generateToken(usuario.getUserName(), perfis);
-            String refreshToken = jwtUtil.generateRefreshToken(loginRequest.getUsername(), perfis);
+            // Gerar JWT com perfis e permissões
+            String accessToken = jwtUtil.generateToken(usuario.getUserName(), perfis, permissoes);
+            String refreshToken = jwtUtil.generateRefreshToken(loginRequest.getUsername(), perfis, permissoes);
 
             return ResponseEntity.ok(new LoginResponseDTO(accessToken, refreshToken));
         } catch (AuthenticationException e) {
@@ -66,33 +70,34 @@ public class AuthController implements AuthControllerDocs {
     public ResponseEntity<RefreshTokenResponseDTO> refresh(@RequestBody RefreshTokenRequestDTO refreshRequest) {
         String refreshToken = refreshRequest.getRefreshToken();
 
-
         if (!jwtUtil.validateToken(refreshToken) || !jwtUtil.isRefreshToken(refreshToken)) {
             return ResponseEntity.badRequest().build();
         }
 
         String username = jwtUtil.getUsernameFromToken(refreshToken);
 
-
         Usuario usuario = usuarioService.buscarPorUsuario(username);
-        List<String> roles = usuario.getUsuarioPerfis().stream()
+
+        // Perfis
+        List<String> perfis = usuario.getUsuarioPerfis().stream()
+                .map(usuarioPerfil -> usuarioPerfil.getPerfil().getNome())
+                .distinct()
+                .toList();
+
+        // Permissões
+        List<String> permissoes = usuario.getUsuarioPerfis().stream()
                 .flatMap(usuarioPerfil -> usuarioPerfil.getPerfil().getPermissoes().stream())
                 .map(permissao -> permissao.getNome())
                 .distinct()
                 .toList();
 
-
-        String newAccessToken = jwtUtil.generateToken(username, roles);
+        String newAccessToken = jwtUtil.generateToken(username, perfis, permissoes);
 
         return ResponseEntity.ok(new RefreshTokenResponseDTO(newAccessToken));
     }
 
-    @PostMapping("/cadastro")
-    public ResponseEntity<UsuarioCadastroResponseDTO> cadastro(@RequestBody UsuarioCadastroRequestDTO registroRequest) {
-        UsuarioCadastroResponseDTO response = usuarioService.cadastro(registroRequest);
-        if ("Usuário já existente!".equals(response.getMessage())) {
-            return ResponseEntity.badRequest().body(response);
-        }
-        return ResponseEntity.status(201).body(response);
-    }
+
+
+
+
 }
