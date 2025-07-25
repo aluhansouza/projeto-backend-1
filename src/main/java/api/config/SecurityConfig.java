@@ -84,6 +84,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**", "/public/**", "/error").permitAll()
+                        .requestMatchers("/api/v1/materiais/imagem/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticatorFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
