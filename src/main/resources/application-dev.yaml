@@ -1,0 +1,78 @@
+spring:
+  # Configurações do banco de dados para desenvolvimento
+  datasource:
+    url: jdbc:mariadb://localhost:3306/api_sistema?useUnicode=true&characterEncoding=utf8mb4&serverTimezone=America/Manaus
+    username: usuario_sistema
+    password: Sistema2026@
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  # Configurações JPA / Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: none  # ✅ Alterei para 'update' (útil em dev para refletir mudanças no código)
+    show-sql: true      # Mostra as queries no console
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+        format_sql: true  # Deixa as queries mais legíveis
+
+  # Configurações do Jackson (serialização JSON)
+  jackson:
+    serialization:
+      indent-output: true  # Deixa o JSON formatado (útil em dev)
+
+  # Ativa o Spring DevTools (reinício automático)
+  devtools:
+    restart:
+      enabled: true
+
+  # Configurações de cache (desativado em dev para evitar inconsistências)
+  cache:
+    type: none
+
+  # Configurações de CORS (Spring Boot 2.4+)
+  web:
+    cors:
+      allowed-origins: "http://localhost:4200"  # Frontend Angular local
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+      allowed-headers: "*"
+      allow-credentials: true
+
+  # Configurações de multipart (uploads)
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+
+  # Configurações de email (se for usar em dev)
+  mail:
+    host: smtp.gmail.com  # Exemplo: Gmail
+    port: 587
+    username: seuemail@gmail.com
+    password: suachaveapp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+logging:
+  level:
+    root: INFO
+    api: DEBUG  # Substitua "com.seuapp" pelo seu pacote base
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Configurações customizadas da aplicação
+app:
+  jwt:
+    secret: ${JWT_SECRET:chave-mestre}  # ✅ Recomendo usar variável de ambiente
+    expiration: 28800000  # 8 horas (em milissegundos)
+    refresh-expiration: 604800000  # 7 dias
+
+server:
+  port: 8080
