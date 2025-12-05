@@ -1,0 +1,80 @@
+spring:
+  # Configurações do banco de dados para desenvolvimento
+  datasource:
+    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NOME}?useUnicode=true&characterEncoding=utf8mb4&serverTimezone=America/Manaus
+    username: ${DB_USUARIO}
+    password: ${DB_SENHA}
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  # Configurações JPA / Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+        format_sql: true
+
+  # Jackson (JSON formatado em dev)
+  jackson:
+    serialization:
+      indent-output: true
+
+  # Spring DevTools (hot reload)
+  devtools:
+    restart:
+      enabled: true
+
+  # Cache desativado em dev
+  cache:
+    type: none
+
+  # CORS para frontend Angular
+  web:
+    cors:
+      originPatterns: "http://localhost:4200"
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+      allowed-headers: "Authorization,Content-Type,X-Requested-With,Accept,Origin"
+      allow-credentials: true
+
+  # Uploads de arquivos
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+
+  # Email (SMTP - opcional em dev)
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# Níveis de log detalhados para desenvolvimento
+logging:
+  level:
+    root: INFO
+    api: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Configurações customizadas da aplicação
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: 28800000      # 8 horas
+    refresh-expiration: 604800000  # 7 dias
+
+# Porta do servidor
+server:
+  port: 8080

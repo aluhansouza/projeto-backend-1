@@ -22,9 +22,9 @@ public class TesteConexaoDB implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         try {
             jdbcTemplate.queryForObject("SELECT 1", Integer.class);
-            logger.info("✅ Conectado com sucesso ao banco de dados!");
+            logger.info("Conectado com sucesso ao banco de dados!");
         } catch (Exception e) {
-            logger.error("❌ Falha ao conectar ao banco de dados: {}", e.getMessage());
+            logger.error("Falha ao conectar ao banco de dados: {}", e.getMessage());
             // System.exit(1);
         }
     }
