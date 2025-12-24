@@ -1,0 +1,76 @@
+
+
+services:
+
+  mariadb:
+    image: mariadb:11.4
+    container_name: ${COMPOSE_PROJECT_NAME:-app}-mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIA_ROOT_PASSWORD}
+      MARIADB_USER: ${DB_USUARIO}
+      MARIADB_PASSWORD: ${DB_SENHA}
+      MARIADB_DATABASE: ${DB_NOME}
+      TZ: America/Manaus
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - "${DB_PORT}:3306"
+    networks:
+      - backend-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: ${COMPOSE_PROJECT_NAME:-app}-api
+    environment:
+      CHAVE_APP: ${CHAVE_APP}
+      USUARIO_EMAIL: ${USUARIO_EMAIL}
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_NOME: ${DB_NOME}
+      DB_USUARIO: ${DB_USUARIO}
+      DB_SENHA: ${DB_SENHA}
+      JWT_SECRET: ${JWT_SECRET}
+      UPLOADS: ${UPLOADS}
+      TZ: America/Manaus
+      SPRING_FLYWAY_ENABLED: ${SPRING_FLYWAY_ENABLED}
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: ${SPRING_FLYWAY_BASELINE_ON_MIGRATE}
+    volumes:
+      - api_uploads:/app/uploads
+      - api_logs:/app/logs
+    ports:
+      - "8080:8080"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - backend-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+networks:
+  backend-network:
+    name: ${COMPOSE_PROJECT_NAME:-app}_network
+    driver: bridge
+
+volumes:
+  mariadb_data:
+    name: ${COMPOSE_PROJECT_NAME:-app}_mariadb_data
+  api_uploads:
+    name: ${COMPOSE_PROJECT_NAME:-app}_uploads
+  api_logs:
+    name: ${COMPOSE_PROJECT_NAME:-app}_logs

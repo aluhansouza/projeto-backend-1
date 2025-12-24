@@ -1,0 +1,136 @@
+
+spring:
+
+  datasource:
+    url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NOME}?useUnicode=true&characterEncoding=utf8mb4&serverTimezone=America/Manaus&useSSL=false&allowPublicKeyRetrieval=true&disableGssapi=true&disableGssapiAuthentication=true&authenticationPlugins=mysql_native_password
+    username: ${DB_USUARIO}
+    password: ${DB_SENHA}
+    driver-class-name: org.mariadb.jdbc.Driver
+
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+        format_sql: true
+
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+
+  flyway:
+    enabled: ${SPRING_FLYWAY_ENABLED:true}
+    baseline-on-migrate: ${SPRING_FLYWAY_BASELINE_ON_MIGRATE:true}
+    locations: classpath:db/migration
+    validate-on-migrate: true
+
+
+  jackson:
+    serialization:
+      indent-output: true
+      write-dates-as-timestamps: false
+    time-zone: America/Manaus
+
+
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+
+  cache:
+    type: none
+
+
+  web:
+    cors:
+
+      allowed-origins:
+        - http://localhost:4200
+        - http://localhost:3000
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS,PATCH
+      allowed-headers: "*"
+      allow-credentials: true
+      max-age: 3600
+
+
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+
+      location: ${UPLOADS:uploads}
+
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${USUARIO_EMAIL}
+    password: ${CHAVE_APP}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+
+logging:
+  level:
+    root: INFO
+    api: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+  file:
+    name: logs/application-dev.log
+    max-size: 10MB
+    max-history: 7
+
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: 28800000
+    refresh-expiration: 604800000
+
+
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
